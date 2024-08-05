@@ -17,7 +17,6 @@ func main() {
 	button := rl.LoadTexture(buttonFile)
 	defer rl.UnloadTexture(button)
 
-	// Define the positions and sizes of multiple buttons
 	buttons := []rl.Rectangle{
 		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
 		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
@@ -76,7 +75,6 @@ func DrawButton(button rl.Texture2D, bounds rl.Rectangle, mousePoint rl.Vector2,
 
 	rl.DrawTextureRec(button, sourceRec, rl.Vector2{X: bounds.X, Y: bounds.Y}, rl.White)
 
-	// Draw the text centered on the button
 	textWidth := rl.MeasureText(text, 20)
 	textX := bounds.X + (bounds.Width/2 - float32(textWidth)/2)
 	textY := bounds.Y + (bounds.Height/2 - float32(20)/2)
