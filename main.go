@@ -2,42 +2,85 @@ package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
+const (
+	screenWidth  int32  = 1000
+	screenHeight int32  = 720
+	gameTitle    string = "Detective Game"
+	fps          int32  = 60
+	buttonFile   string = "resources/button.png"
+)
+
 func main() {
-	rl.InitWindow(800, 450, "raylib [core] example - basic window")
-	rl.SetTargetFPS(60)
+	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	rl.SetTargetFPS(fps)
 
-	var name string = ""
+	button := rl.LoadTexture(buttonFile)
+	defer rl.UnloadTexture(button)
 
-	var nameCreated bool = false
+	// Define the positions and sizes of multiple buttons
+	buttons := []rl.Rectangle{
+		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
+		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
+		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
+	}
+
+	texts := []string{
+		"Button 1",
+		"Button 2",
+		"Button 3",
+	}
+
+	buttonActions := make([]bool, len(buttons))
 
 	for !rl.WindowShouldClose() {
+		mousePoint := rl.GetMousePosition()
+
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
-		var charPressed int32 = rl.GetCharPressed()
 
-		if !nameCreated {
-			rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
-			rl.DrawText("Input your name:", 190, 240, 20, rl.LightGray)
-
-			if charPressed != 0 {
-				name += string(charPressed)
+		for i, btnBounds := range buttons {
+			buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
+			if buttonActions[i] {
+				// rl.DrawText("Button Clicked!", screenWidth/2-rl.MeasureText("Button Clicked!", 20)/2, screenHeight/2+button.Height*int32(i+1)/3+10, 20, rl.Gray)
 			}
-
-			if rl.IsKeyPressed(rl.KeyBackspace) && len(name) > 0 {
-				name = name[:len(name)-1]
-			}
-
-			if rl.IsKeyPressed(rl.KeyEnter) {
-				nameCreated = true
-			}
-
-			rl.DrawText(name, 190, 280, 20, rl.LightGray)
-		} else {
-			rl.DrawText("Welcome to the game, "+name, 190, 200, 20, rl.LightGray)
 		}
 
 		rl.EndDrawing()
 	}
 
 	rl.CloseWindow()
+}
+
+func DrawButton(button rl.Texture2D, bounds rl.Rectangle, mousePoint rl.Vector2, text string) bool {
+	frameHeight := button.Height / 3
+	sourceRec := rl.Rectangle{Width: float32(button.Width), Height: float32(frameHeight)}
+
+	var btnState int32
+	var btnAction bool
+
+	if rl.CheckCollisionPointRec(mousePoint, bounds) {
+		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+			btnState = 2
+		} else {
+			btnState = 1
+		}
+
+		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+			btnAction = true
+		}
+	} else {
+		btnState = 0
+	}
+
+	sourceRec.Y = float32(btnState * frameHeight)
+
+	rl.DrawTextureRec(button, sourceRec, rl.Vector2{X: bounds.X, Y: bounds.Y}, rl.White)
+
+	// Draw the text centered on the button
+	textWidth := rl.MeasureText(text, 20)
+	textX := bounds.X + (bounds.Width/2 - float32(textWidth)/2)
+	textY := bounds.Y + (bounds.Height/2 - float32(20)/2)
+	rl.DrawText(text, int32(textX), int32(textY), 20, rl.White)
+
+	return btnAction
 }
