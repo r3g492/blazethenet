@@ -2,20 +2,11 @@ package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-type GameState int
-
-const (
-	NameCreation = iota
-	Playing
-)
-
 func main() {
 	rl.InitWindow(800, 450, "raylib [core] example - basic window")
 	rl.SetTargetFPS(60)
 
 	var name string = ""
-
-	// var gameState GameState = NameCreation
 
 	var nameCreated bool = false
 
