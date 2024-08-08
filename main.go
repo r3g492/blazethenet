@@ -97,7 +97,3 @@ func DrawButton(button rl.Texture2D, bounds rl.Rectangle, mousePoint rl.Vector2,
 
 	return btnAction
 }
-
-func endGame() {
-	rl.CloseWindow()
-}
