@@ -11,9 +11,27 @@ const (
 )
 
 const (
+	MainMenu = iota
+	GameStart
+	Settings
+)
+
+/*
+*
+main menu buttons
+*/
+const (
 	StartMenu = iota
 	SettingsMenu
 	ExitMenu
+)
+
+/*
+*
+game settings
+*/
+const (
+	ReturnToMain = iota
 )
 
 func main() {
@@ -23,40 +41,64 @@ func main() {
 	button := rl.LoadTexture(buttonFile)
 	defer rl.UnloadTexture(button)
 
-	buttons := []rl.Rectangle{
-		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
-		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
-		{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
-	}
-
-	texts := []string{
-		"Start",
-		"Settings",
-		"Exit",
-	}
-
-	buttonActions := make([]bool, len(buttons))
+	gameState := MainMenu
 GameLoop:
 	for !rl.WindowShouldClose() {
 		mousePoint := rl.GetMousePosition()
 
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.RayWhite)
+		rl.ClearBackground(rl.Black)
 
-		for i, btnBounds := range buttons {
-			buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
-
-			if buttonActions[StartMenu] {
-
+		switch gameState {
+		case MainMenu:
+			buttons := []rl.Rectangle{
+				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
+				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
+				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
 			}
 
-			if buttonActions[SettingsMenu] {
-
+			texts := []string{
+				"Start",
+				"Settings",
+				"Exit",
 			}
 
-			if buttonActions[ExitMenu] {
-				break GameLoop
+			buttonActions := make([]bool, len(buttons))
+
+			for i, btnBounds := range buttons {
+				buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
+
+				if buttonActions[StartMenu] {
+				}
+
+				if buttonActions[SettingsMenu] {
+					gameState = Settings
+				}
+
+				if buttonActions[ExitMenu] {
+					break GameLoop
+				}
 			}
+		case Settings:
+			buttons := []rl.Rectangle{
+				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
+			}
+
+			texts := []string{
+				"ReturnToMain",
+			}
+
+			buttonActions := make([]bool, len(buttons))
+
+			for i, btnBounds := range buttons {
+				buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
+
+				if buttonActions[ReturnToMain] {
+					gameState = MainMenu
+				}
+			}
+		default:
+
 		}
 
 		rl.EndDrawing()
