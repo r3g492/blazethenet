@@ -10,6 +10,12 @@ const (
 	buttonFile   string = "resources/button.png"
 )
 
+const (
+	StartMenu = iota
+	SettingsMenu
+	ExitMenu
+)
+
 func main() {
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
 	rl.SetTargetFPS(fps)
@@ -24,13 +30,13 @@ func main() {
 	}
 
 	texts := []string{
-		"Button 1",
-		"Button 2",
-		"Button 3",
+		"Start",
+		"Settings",
+		"Exit",
 	}
 
 	buttonActions := make([]bool, len(buttons))
-
+GameLoop:
 	for !rl.WindowShouldClose() {
 		mousePoint := rl.GetMousePosition()
 
@@ -39,8 +45,17 @@ func main() {
 
 		for i, btnBounds := range buttons {
 			buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
-			if buttonActions[i] {
-				// rl.DrawText("Button Clicked!", screenWidth/2-rl.MeasureText("Button Clicked!", 20)/2, screenHeight/2+button.Height*int32(i+1)/3+10, 20, rl.Gray)
+
+			if buttonActions[StartMenu] {
+
+			}
+
+			if buttonActions[SettingsMenu] {
+
+			}
+
+			if buttonActions[ExitMenu] {
+				break GameLoop
 			}
 		}
 
@@ -81,4 +96,8 @@ func DrawButton(button rl.Texture2D, bounds rl.Rectangle, mousePoint rl.Vector2,
 	rl.DrawText(text, int32(textX), int32(textY), 20, rl.White)
 
 	return btnAction
+}
+
+func endGame() {
+	rl.CloseWindow()
 }
