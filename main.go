@@ -3,12 +3,17 @@ package main
 import rl "github.com/gen2brain/raylib-go/raylib"
 
 const (
-	screenWidth  int32  = 1000
-	screenHeight int32  = 720
-	gameTitle    string = "Detective Game"
-	fps          int32  = 60
-	buttonFile   string = "resources/button.png"
+	gameTitle  string = "Detective Game"
+	fps        int32  = 60
+	buttonFile string = "resources/button.png"
 )
+
+var screenWidth int32 = 800
+var screenHeight int32 = 600
+var userMonitorWidth int = 1024
+var userMonitorHeight int = 816
+var userMonitorCount int
+var isFullScreen bool = false
 
 const (
 	MainMenu = iota
@@ -31,17 +36,26 @@ const (
 game settings
 */
 const (
-	ReturnToMain = iota
+	FullScreen = iota
+	Resolution_800_600
+	ReturnToMain
 )
 
 func main() {
+
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+
+	userMonitorCount = rl.GetMonitorCount()
+	userMonitorWidth = rl.GetMonitorWidth(0)
+	userMonitorHeight = rl.GetMonitorHeight(0)
+
 	rl.SetTargetFPS(fps)
 
 	button := rl.LoadTexture(buttonFile)
 	defer rl.UnloadTexture(button)
 
 	gameState := MainMenu
+
 GameLoop:
 	for !rl.WindowShouldClose() {
 		mousePoint := rl.GetMousePosition()
@@ -69,6 +83,7 @@ GameLoop:
 				buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
 
 				if buttonActions[StartMenu] {
+					// Start the game
 				}
 
 				if buttonActions[SettingsMenu] {
@@ -81,11 +96,15 @@ GameLoop:
 			}
 		case Settings:
 			buttons := []rl.Rectangle{
+				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
+				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
 				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
 			}
 
 			texts := []string{
-				"ReturnToMain",
+				"Toggle Fullscreen",
+				"800x600 Resolution",
+				"Return to Main Menu",
 			}
 
 			buttonActions := make([]bool, len(buttons))
@@ -93,12 +112,29 @@ GameLoop:
 			for i, btnBounds := range buttons {
 				buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
 
+				if buttonActions[FullScreen] {
+					if !isFullScreen {
+						screenWidth = int32(userMonitorWidth)
+						screenHeight = int32(userMonitorHeight)
+						rl.SetWindowSize(int(screenWidth), int(screenHeight))
+						rl.SetWindowPosition(0, 0)
+						isFullScreen = true
+					}
+				}
+
+				if buttonActions[Resolution_800_600] {
+					screenWidth = 800
+					screenHeight = 600
+					rl.SetWindowSize(int(screenWidth), int(screenHeight))
+					rl.SetWindowPosition(userMonitorWidth/4, userMonitorHeight/4)
+					isFullScreen = false
+				}
+
 				if buttonActions[ReturnToMain] {
 					gameState = MainMenu
 				}
 			}
 		default:
-
 		}
 
 		rl.EndDrawing()
