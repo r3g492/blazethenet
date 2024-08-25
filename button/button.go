@@ -75,10 +75,12 @@ func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string) b
 
 	rl.DrawTexturePro(buttonTexture, sourceRec, destRec, rl.Vector2{X: 0, Y: 0}, 0, rl.White)
 
-	textWidth := rl.MeasureText(text, 20)
+	fontSize := int32(20 * screenRatio)
+
+	textWidth := rl.MeasureText(text, fontSize)
 	textX := bounds.X + (bounds.Width/2 - float32(textWidth)/2)
-	textY := bounds.Y + (bounds.Height/2 - float32(20)/2)
-	rl.DrawText(text, int32(textX), int32(textY), 20, rl.White)
+	textY := bounds.Y + (bounds.Height/2 - float32(fontSize)/2)
+	rl.DrawText(text, int32(textX), int32(textY), fontSize, rl.White)
 
 	return btnAction
 }
