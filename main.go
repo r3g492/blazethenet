@@ -102,7 +102,7 @@ GameLoop:
 			}
 
 			texts := []string{
-				"Toggle Fullscreen",
+				"Fullscreen",
 				"800x600 Resolution",
 				"Return to Main Menu",
 			}
