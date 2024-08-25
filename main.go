@@ -11,8 +11,8 @@ const (
 	fps       int32  = 60
 )
 
-var screenWidth int32 = 800
-var screenHeight int32 = 600
+var screenWidth int32 = 1024
+var screenHeight int32 = 800
 var userMonitorWidth int
 var userMonitorHeight int
 var userMonitorCount int
@@ -40,8 +40,12 @@ const (
 const (
 	FullScreen = iota
 	Resolution800600
+	Resolution1024768
+	Resolution19201080
 	ReturnToMain
 )
+
+var screenRatio float32 = 1
 
 func main() {
 
@@ -60,8 +64,15 @@ func main() {
 
 GameLoop:
 	for !rl.WindowShouldClose() {
-		mousePoint := rl.GetMousePosition()
+		if screenWidth > 1200 {
+			screenRatio = 1.3
+		} else if screenWidth < 600 {
+			screenRatio = 0.8
+		} else {
+			screenRatio = 1
+		}
 
+		mousePoint := rl.GetMousePosition()
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
 
@@ -73,11 +84,11 @@ GameLoop:
 				"Settings",
 				"Exit",
 			}
-			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight)
+			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
 			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i])
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
 
 				if buttonActions[StartMenu] {
 					gameState = InGame
@@ -99,13 +110,15 @@ GameLoop:
 			texts := []string{
 				"Fullscreen",
 				"800x600 Resolution",
+				"1024x768 Resolution",
+				"1920x1080 Resolution",
 				"Main Menu",
 			}
-			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight)
+			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
 			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i])
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
 
 				if buttonActions[FullScreen] {
 					if !isFullScreen {
@@ -113,7 +126,9 @@ GameLoop:
 						screenHeight = int32(userMonitorHeight)
 						rl.SetWindowSize(int(screenWidth), int(screenHeight))
 						rl.SetWindowPosition(0, 0)
+						rl.ToggleFullscreen()
 						isFullScreen = true
+
 					}
 				}
 
@@ -121,8 +136,33 @@ GameLoop:
 					screenWidth = 800
 					screenHeight = 600
 					rl.SetWindowSize(int(screenWidth), int(screenHeight))
-					rl.SetWindowPosition(userMonitorWidth/4, userMonitorHeight/4)
+					rl.SetWindowPosition(0, 30)
 					isFullScreen = false
+					if rl.IsWindowFullscreen() {
+						rl.ToggleFullscreen()
+					}
+				}
+
+				if buttonActions[Resolution1024768] {
+					screenWidth = 1024
+					screenHeight = 768
+					rl.SetWindowSize(int(screenWidth), int(screenHeight))
+					rl.SetWindowPosition(0, 30)
+					isFullScreen = false
+					if rl.IsWindowFullscreen() {
+						rl.ToggleFullscreen()
+					}
+				}
+
+				if buttonActions[Resolution19201080] {
+					screenWidth = 1920
+					screenHeight = 1080
+					rl.SetWindowSize(int(screenWidth), int(screenHeight))
+					rl.SetWindowPosition(0, 30)
+					isFullScreen = false
+					if rl.IsWindowFullscreen() {
+						rl.ToggleFullscreen()
+					}
 				}
 
 				if buttonActions[ReturnToMain] {

@@ -11,7 +11,6 @@ const (
 )
 
 var buttonTexture rl.Texture2D
-var screenRatio float32 = 1
 
 type Info struct {
 	ScreenWidth  int32
@@ -43,7 +42,7 @@ func UnloadButtonTexture() {
 	rl.UnloadTexture(buttonTexture)
 }
 
-func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string) bool {
+func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string, screenRatio float32) bool {
 	frameHeight := buttonTexture.Height / InOneFile
 	sourceRec := rl.Rectangle{Width: float32(buttonTexture.Width), Height: float32(frameHeight)}
 
@@ -84,14 +83,7 @@ func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string) b
 
 	return btnAction
 }
-func Plan(texts []string, screenWidth int32, screenHeight int32) (Info, error) {
-	if screenHeight > 1000 {
-		screenRatio = 1.3
-	} else if screenHeight < 600 {
-		screenRatio = 0.8
-	} else {
-		screenRatio = 1
-	}
+func Plan(texts []string, screenWidth int32, screenHeight int32, screenRatio float32) (Info, error) {
 
 	buttonHeight := float32(buttonTexture.Height/InOneFile) * screenRatio
 	buttonWidth := float32(buttonTexture.Width) * screenRatio
