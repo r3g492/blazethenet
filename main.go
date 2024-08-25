@@ -2,6 +2,7 @@ package main
 
 import (
 	"blazethenet/button"
+	"blazethenet/game"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -19,7 +20,7 @@ var isFullScreen bool = false
 
 const (
 	MainMenu = iota
-	GameStart
+	InGame
 	Settings
 )
 
@@ -28,6 +29,7 @@ const (
  */
 const (
 	StartMenu = iota
+	ReturnToMyGame
 	SettingsMenu
 	ExitMenu
 )
@@ -65,9 +67,9 @@ GameLoop:
 
 		switch gameState {
 		case MainMenu:
-
 			texts := []string{
-				"Start",
+				"StartNew",
+				"ReturnToMyGame",
 				"Settings",
 				"Exit",
 			}
@@ -78,7 +80,11 @@ GameLoop:
 				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i])
 
 				if buttonActions[StartMenu] {
-					// Start the game
+					gameState = InGame
+				}
+
+				if buttonActions[ReturnToMyGame] {
+					gameState = InGame
 				}
 
 				if buttonActions[SettingsMenu] {
@@ -90,7 +96,6 @@ GameLoop:
 				}
 			}
 		case Settings:
-
 			texts := []string{
 				"Fullscreen",
 				"800x600 Resolution",
@@ -124,6 +129,13 @@ GameLoop:
 					gameState = MainMenu
 				}
 			}
+		case InGame:
+			game.GameLogic()
+
+			if rl.IsKeyPressed(rl.KeyF10) {
+				gameState = MainMenu
+			}
+
 		default:
 		}
 
