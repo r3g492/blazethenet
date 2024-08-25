@@ -1,17 +1,19 @@
 package main
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	"blazethenet/button"
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 const (
-	gameTitle  string = "Detective Game"
-	fps        int32  = 60
-	buttonFile string = "resources/button.png"
+	gameTitle string = "Detective Game"
+	fps       int32  = 60
 )
 
 var screenWidth int32 = 800
 var screenHeight int32 = 600
-var userMonitorWidth int = 1024
-var userMonitorHeight int = 816
+var userMonitorWidth int
+var userMonitorHeight int
 var userMonitorCount int
 var isFullScreen bool = false
 
@@ -22,9 +24,8 @@ const (
 )
 
 /*
-*
-main menu buttons
-*/
+ * Main menu buttons
+ */
 const (
 	StartMenu = iota
 	SettingsMenu
@@ -32,12 +33,11 @@ const (
 )
 
 /*
-*
-game settings
-*/
+ * Game settings
+ */
 const (
 	FullScreen = iota
-	Resolution_800_600
+	Resolution800600
 	ReturnToMain
 )
 
@@ -51,8 +51,8 @@ func main() {
 
 	rl.SetTargetFPS(fps)
 
-	button := rl.LoadTexture(buttonFile)
-	defer rl.UnloadTexture(button)
+	button.InitButtonTexture()
+	defer button.UnloadButtonTexture()
 
 	gameState := MainMenu
 
@@ -65,22 +65,17 @@ GameLoop:
 
 		switch gameState {
 		case MainMenu:
-			buttons := []rl.Rectangle{
-				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
-				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
-				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
-			}
 
 			texts := []string{
 				"Start",
 				"Settings",
 				"Exit",
 			}
+			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight)
+			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
-			buttonActions := make([]bool, len(buttons))
-
-			for i, btnBounds := range buttons {
-				buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
+			for i, btnBounds := range buttonInfo.Buttons {
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i])
 
 				if buttonActions[StartMenu] {
 					// Start the game
@@ -95,22 +90,17 @@ GameLoop:
 				}
 			}
 		case Settings:
-			buttons := []rl.Rectangle{
-				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 - button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
-				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight / 2), Width: float32(button.Width), Height: float32(button.Height / 3)},
-				{X: float32(screenWidth/2 - button.Width/2), Y: float32(screenHeight/2 + button.Height/3), Width: float32(button.Width), Height: float32(button.Height / 3)},
-			}
 
 			texts := []string{
 				"Fullscreen",
 				"800x600 Resolution",
-				"Return to Main Menu",
+				"Main Menu",
 			}
+			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight)
+			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
-			buttonActions := make([]bool, len(buttons))
-
-			for i, btnBounds := range buttons {
-				buttonActions[i] = DrawButton(button, btnBounds, mousePoint, texts[i])
+			for i, btnBounds := range buttonInfo.Buttons {
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i])
 
 				if buttonActions[FullScreen] {
 					if !isFullScreen {
@@ -122,7 +112,7 @@ GameLoop:
 					}
 				}
 
-				if buttonActions[Resolution_800_600] {
+				if buttonActions[Resolution800600] {
 					screenWidth = 800
 					screenHeight = 600
 					rl.SetWindowSize(int(screenWidth), int(screenHeight))
@@ -141,37 +131,4 @@ GameLoop:
 	}
 
 	rl.CloseWindow()
-}
-
-func DrawButton(button rl.Texture2D, bounds rl.Rectangle, mousePoint rl.Vector2, text string) bool {
-	frameHeight := button.Height / 3
-	sourceRec := rl.Rectangle{Width: float32(button.Width), Height: float32(frameHeight)}
-
-	var btnState int32
-	var btnAction bool
-
-	if rl.CheckCollisionPointRec(mousePoint, bounds) {
-		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-			btnState = 2
-		} else {
-			btnState = 1
-		}
-
-		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-			btnAction = true
-		}
-	} else {
-		btnState = 0
-	}
-
-	sourceRec.Y = float32(btnState * frameHeight)
-
-	rl.DrawTextureRec(button, sourceRec, rl.Vector2{X: bounds.X, Y: bounds.Y}, rl.White)
-
-	textWidth := rl.MeasureText(text, 20)
-	textX := bounds.X + (bounds.Width/2 - float32(textWidth)/2)
-	textY := bounds.Y + (bounds.Height/2 - float32(20)/2)
-	rl.DrawText(text, int32(textX), int32(textY), 20, rl.White)
-
-	return btnAction
 }
