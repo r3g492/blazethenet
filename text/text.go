@@ -1,5 +1,9 @@
 package text
 
+/**
+TODO: 폰트
+*/
+
 const (
 	English = iota
 	Korean
