@@ -3,6 +3,7 @@ package main
 import (
 	"blazethenet/button"
 	"blazethenet/game"
+	"blazethenet/text"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -19,9 +20,11 @@ var userMonitorCount int
 var isFullScreen bool = false
 
 const (
-	MainMenu = iota
+	InMainMenu = iota
 	InGame
-	Settings
+	InSettings
+	InResolutionSettings
+	InLanguageSettings
 )
 
 /*
@@ -35,14 +38,32 @@ const (
 )
 
 /*
- * Game settings
+ * settings
+ */
+const (
+	ResolutionSettings = iota
+	LanguageSettings
+	BackFromSettings
+)
+
+/*
+ * Resolution settings
  */
 const (
 	FullScreen = iota
 	Resolution800600
 	Resolution1024768
 	Resolution19201080
-	ReturnToMain
+	BackFromResolution
+)
+
+/*
+ * Language settings
+ */
+const (
+	English = iota
+	Korean
+	BackFromLanguage
 )
 
 var screenRatio float32 = 1
@@ -60,7 +81,7 @@ func main() {
 	button.InitButtonTexture()
 	defer button.UnloadButtonTexture()
 
-	gameState := MainMenu
+	gameState := InMainMenu
 
 GameLoop:
 	for !rl.WindowShouldClose() {
@@ -77,12 +98,24 @@ GameLoop:
 		rl.ClearBackground(rl.Black)
 
 		switch gameState {
-		case MainMenu:
+		case InMainMenu:
 			texts := []string{
-				"StartNew",
-				"ReturnToMyGame",
-				"Settings",
-				"Exit",
+				text.NewText(
+					"StartNew",
+					"새로 시작",
+				).Get(),
+				text.NewText(
+					"ReturnToGame",
+					"돌아가기",
+				).Get(),
+				text.NewText(
+					"InSettings",
+					"설정",
+				).Get(),
+				text.NewText(
+					"Exit",
+					"종료",
+				).Get(),
 			}
 			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
@@ -99,20 +132,68 @@ GameLoop:
 				}
 
 				if buttonActions[SettingsMenu] {
-					gameState = Settings
+					gameState = InSettings
 				}
 
 				if buttonActions[ExitMenu] {
 					break GameLoop
 				}
 			}
-		case Settings:
+		case InSettings:
 			texts := []string{
-				"Fullscreen",
-				"800x600 Resolution",
-				"1024x768 Resolution",
-				"1920x1080 Resolution",
-				"Main Menu",
+				text.NewText(
+					"ResolutionSettings",
+					"해상도 세팅",
+				).Get(),
+				text.NewText(
+					"LanguageSettings",
+					"언어 설정",
+				).Get(),
+				text.NewText(
+					"InMainMenu",
+					"주 메뉴",
+				).Get(),
+			}
+			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
+			buttonActions := make([]bool, len(buttonInfo.Buttons))
+
+			for i, btnBounds := range buttonInfo.Buttons {
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
+
+				if buttonActions[ResolutionSettings] {
+					gameState = InResolutionSettings
+				}
+
+				if buttonActions[LanguageSettings] {
+					gameState = InLanguageSettings
+				}
+
+				if buttonActions[BackFromSettings] {
+					gameState = InMainMenu
+				}
+			}
+		case InResolutionSettings:
+			texts := []string{
+				text.NewText(
+					"FullScreen",
+					"전체 화면",
+				).Get(),
+				text.NewText(
+					"800x600Resolution",
+					"해상도800x600",
+				).Get(),
+				text.NewText(
+					"1024x768Resolution",
+					"해상도1024x768",
+				).Get(),
+				text.NewText(
+					"1920x1080Resolution",
+					"해상도1920x1080",
+				).Get(),
+				text.NewText(
+					"Back",
+					"돌아가기",
+				).Get(),
 			}
 			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
@@ -165,15 +246,48 @@ GameLoop:
 					}
 				}
 
-				if buttonActions[ReturnToMain] {
-					gameState = MainMenu
+				if buttonActions[BackFromResolution] {
+					gameState = InSettings
+				}
+			}
+		case InLanguageSettings:
+			texts := []string{
+				text.NewText(
+					"English",
+					"영어",
+				).Get(),
+				text.NewText(
+					"Korean",
+					"한국어",
+				).Get(),
+				text.NewText(
+					"Back",
+					"돌아가기",
+				).Get(),
+			}
+			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
+			buttonActions := make([]bool, len(buttonInfo.Buttons))
+
+			for i, btnBounds := range buttonInfo.Buttons {
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
+
+				if buttonActions[English] {
+					text.SetLanguageToEnglish()
+				}
+
+				if buttonActions[Korean] {
+					text.SetLanguageToKorean()
+				}
+
+				if buttonActions[BackFromLanguage] {
+					gameState = InSettings
 				}
 			}
 		case InGame:
 			game.GameLogic()
 
 			if rl.IsKeyPressed(rl.KeyF10) {
-				gameState = MainMenu
+				gameState = InMainMenu
 			}
 
 		default:
