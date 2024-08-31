@@ -254,7 +254,7 @@ GameLoop:
 			texts := []string{
 				text.NewText(
 					"English",
-					"영어",
+					"English",
 				).Get(),
 				text.NewText(
 					"Korean",
