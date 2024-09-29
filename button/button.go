@@ -42,7 +42,7 @@ func UnloadButtonTexture() {
 	rl.UnloadTexture(buttonTexture)
 }
 
-func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string, screenRatio float32) bool {
+func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string, screenRatio float32, font rl.Font) bool {
 	frameHeight := buttonTexture.Height / InOneFile
 	sourceRec := rl.Rectangle{Width: float32(buttonTexture.Width), Height: float32(frameHeight)}
 
@@ -74,13 +74,14 @@ func DrawButtonAction(bounds rl.Rectangle, mousePoint rl.Vector2, text string, s
 
 	rl.DrawTexturePro(buttonTexture, sourceRec, destRec, rl.Vector2{X: 0, Y: 0}, 0, rl.White)
 
-	fontSize := int32(20 * screenRatio)
-
-	textWidth := rl.MeasureText(text, fontSize)
+	textSize := int32(20 * screenRatio)
+	textWidth := rl.MeasureText(text, textSize)
 	textX := bounds.X + (bounds.Width/2 - float32(textWidth)/2)
-	textY := bounds.Y + (bounds.Height/2 - float32(fontSize)/2)
-	rl.DrawText(text, int32(textX), int32(textY), fontSize, rl.White)
+	textY := bounds.Y + (bounds.Height/2 - float32(textSize)/2)
 
+	spacing := float32(1)
+	fontSize := 20 * screenRatio
+	rl.DrawTextEx(font, text, rl.Vector2{X: textX, Y: textY}, fontSize, spacing, rl.White)
 	return btnAction
 }
 func Plan(texts []string, screenWidth int32, screenHeight int32, screenRatio float32) (Info, error) {

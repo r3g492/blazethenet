@@ -5,6 +5,7 @@ import (
 	"blazethenet/game"
 	"blazethenet/text"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"path/filepath"
 )
 
 const (
@@ -68,6 +69,9 @@ const (
 
 var screenRatio float32 = 1
 
+var koreanFont rl.Font
+var currentFont rl.Font
+
 func main() {
 
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
@@ -82,6 +86,10 @@ func main() {
 	defer button.UnloadButtonTexture()
 
 	gameState := InMainMenu
+
+	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
+	koreanFont = rl.LoadFontEx(fontPath, 32, nil, 65535)
+	defer rl.UnloadFont(koreanFont)
 
 GameLoop:
 	for !rl.WindowShouldClose() {
@@ -121,7 +129,7 @@ GameLoop:
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
 			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
 
 				if buttonActions[StartMenu] {
 					gameState = InGame
@@ -158,7 +166,7 @@ GameLoop:
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
 			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
 
 				if buttonActions[ResolutionSettings] {
 					gameState = InResolutionSettings
@@ -199,7 +207,7 @@ GameLoop:
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
 			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
 
 				if buttonActions[FullScreen] {
 					if !isFullScreen {
@@ -269,13 +277,15 @@ GameLoop:
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
 			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio)
+				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
 
 				if buttonActions[English] {
+					currentFont = rl.Font{}
 					text.SetLanguageToEnglish()
 				}
 
 				if buttonActions[Korean] {
+					currentFont = koreanFont
 					text.SetLanguageToKorean()
 				}
 
