@@ -293,7 +293,7 @@ func main() {
 				}
 			}
 		case InGame:
-			game.GameLogic()
+			game.Logic()
 
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
