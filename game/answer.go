@@ -15,6 +15,10 @@ const (
 	VerbHas
 )
 
+func (v Verb) String() string {
+	return [...]string{"fears", "is weak against", "looks like", "has"}[v]
+}
+
 type Object int
 
 const (
@@ -23,6 +27,10 @@ const (
 	ObjectWater
 	ObjectThunder
 )
+
+func (o Object) String() string {
+	return [...]string{"fire", "pointy things", "water", "thunder"}[o]
+}
 
 func newAnswer(verb Verb, object Object) Answer {
 	return Answer{"The Monster", verb, object}

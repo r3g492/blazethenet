@@ -105,6 +105,10 @@ func main() {
 
 		switch gameState {
 		case InMainMenu:
+			if rl.WindowShouldClose() {
+				isGameOn = false
+				break
+			}
 			texts := []string{
 				text.NewText(
 					"StartNew",
@@ -142,10 +146,10 @@ func main() {
 				}
 
 				if buttonActions[ExitMenu] {
-					// break GameLoop
 					isGameOn = false
 				}
 			}
+			break
 		case InSettings:
 			texts := []string{
 				text.NewText(
@@ -178,7 +182,12 @@ func main() {
 				if buttonActions[BackFromSettings] {
 					gameState = InMainMenu
 				}
+
+				if rl.IsKeyPressed(rl.KeyEscape) {
+					gameState = InMainMenu
+				}
 			}
+			break
 		case InResolutionSettings:
 			texts := []string{
 				text.NewText(
@@ -256,7 +265,12 @@ func main() {
 				if buttonActions[BackFromResolution] {
 					gameState = InSettings
 				}
+
+				if rl.IsKeyPressed(rl.KeyEscape) {
+					gameState = InMainMenu
+				}
 			}
+			break
 		case InLanguageSettings:
 			texts := []string{
 				text.NewText(
@@ -291,7 +305,12 @@ func main() {
 				if buttonActions[BackFromLanguage] {
 					gameState = InSettings
 				}
+
+				if rl.IsKeyPressed(rl.KeyEscape) {
+					gameState = InMainMenu
+				}
 			}
+			break
 		case InGame:
 			game.Logic()
 
@@ -303,6 +322,10 @@ func main() {
 				gameState = InMainMenu
 			}
 
+			if rl.WindowShouldClose() {
+				gameState = InMainMenu
+			}
+			break
 		default:
 		}
 
