@@ -19,6 +19,10 @@ var userMonitorWidth int
 var userMonitorHeight int
 var userMonitorCount int
 var isFullScreen bool = false
+var isGameOn bool = true
+var screenRatio float32 = 1
+var koreanFont rl.Font
+var currentFont rl.Font
 
 const (
 	InMainMenu = iota
@@ -67,11 +71,6 @@ const (
 	BackFromLanguage
 )
 
-var screenRatio float32 = 1
-
-var koreanFont rl.Font
-var currentFont rl.Font
-
 func main() {
 
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
@@ -91,8 +90,7 @@ func main() {
 	koreanFont = rl.LoadFontEx(fontPath, 32, nil, 65535)
 	defer rl.UnloadFont(koreanFont)
 
-GameLoop:
-	for !rl.WindowShouldClose() {
+	for isGameOn {
 		if screenWidth > 1200 {
 			screenRatio = 1.3
 		} else if screenWidth < 600 {
@@ -144,7 +142,8 @@ GameLoop:
 				}
 
 				if buttonActions[ExitMenu] {
-					break GameLoop
+					// break GameLoop
+					isGameOn = false
 				}
 			}
 		case InSettings:
@@ -297,6 +296,10 @@ GameLoop:
 			game.GameLogic()
 
 			if rl.IsKeyPressed(rl.KeyF10) {
+				gameState = InMainMenu
+			}
+
+			if rl.IsKeyPressed(rl.KeyEscape) {
 				gameState = InMainMenu
 			}
 
