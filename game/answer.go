@@ -17,6 +17,10 @@ const (
 	VerbHas
 )
 
+func GetLastVerb() Verb {
+	return VerbHas
+}
+
 func (v Verb) String() string {
 	return [...]string{"null", "fears", "is weak against", "looks like", "has"}[v]
 }
@@ -30,6 +34,10 @@ const (
 	ObjectWater
 	ObjectThunder
 )
+
+func GetLastObject() Object {
+	return ObjectThunder
+}
 
 func (o Object) String() string {
 	return [...]string{"null", "fire", "pointy things", "water", "thunder"}[o]
