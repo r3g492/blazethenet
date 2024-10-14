@@ -104,3 +104,12 @@ func getAnswers() []Answer {
 		),
 	}
 }
+
+func ScenarioEndCondition() bool {
+	for answer := range answers {
+		if answers[answer].Found == false {
+			return false
+		}
+	}
+	return true
+}

@@ -30,6 +30,7 @@ const (
 	InSettings
 	InResolutionSettings
 	InLanguageSettings
+	ScenarioOver
 )
 
 /*
@@ -313,7 +314,23 @@ func main() {
 			break
 		case InGame:
 			game.Logic()
+			if game.ScenarioEndCondition() {
+				gameState = ScenarioOver
+			}
+			if rl.IsKeyPressed(rl.KeyF10) {
+				gameState = InMainMenu
+			}
 
+			if rl.IsKeyPressed(rl.KeyEscape) {
+				gameState = InMainMenu
+			}
+
+			if rl.WindowShouldClose() {
+				gameState = InMainMenu
+			}
+			break
+		case ScenarioOver:
+			rl.DrawText("success", 100, 100, 200, rl.Blue)
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
 			}
