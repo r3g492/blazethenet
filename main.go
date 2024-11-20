@@ -314,9 +314,6 @@ func main() {
 			break
 		case InGame:
 			game.Logic()
-			if game.ScenarioEndCondition() {
-				gameState = ScenarioOver
-			}
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
 			}
