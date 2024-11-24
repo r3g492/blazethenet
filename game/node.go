@@ -3,12 +3,14 @@ package game
 import (
 	"blazethenet/text"
 	"fmt"
+	"go/types"
 	"strings"
 )
 
 type Node struct {
-	Name        text.Text
-	LinkedNodes []Node
+	Name         text.Text
+	LinkedNodes  []Node
+	RoutingTable []types.Map
 }
 
 func NewNode(name text.Text) *Node {
@@ -22,7 +24,7 @@ func (targetNode *Node) linkNode(linkingNode *Node) {
 }
 
 func (targetNode *Node) String() string {
-	linkedNodeNames := []string{}
+	var linkedNodeNames []string
 	for _, linkedNode := range targetNode.LinkedNodes {
 		linkedNodeNames = append(linkedNodeNames, linkedNode.Name.String()) // Assuming text.Text has a String method
 	}
