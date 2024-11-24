@@ -114,19 +114,19 @@ func main() {
 				text.NewText(
 					"StartNew",
 					"새로 시작",
-				).Get(),
+				).String(),
 				text.NewText(
 					"ReturnToGame",
 					"돌아가기",
-				).Get(),
+				).String(),
 				text.NewText(
 					"InSettings",
 					"설정",
-				).Get(),
+				).String(),
 				text.NewText(
 					"Exit",
 					"종료",
-				).Get(),
+				).String(),
 			}
 			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
@@ -156,15 +156,15 @@ func main() {
 				text.NewText(
 					"ResolutionSettings",
 					"해상도 세팅",
-				).Get(),
+				).String(),
 				text.NewText(
 					"LanguageSettings",
 					"언어 설정",
-				).Get(),
+				).String(),
 				text.NewText(
 					"InMainMenu",
 					"주 메뉴",
-				).Get(),
+				).String(),
 			}
 			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
@@ -194,23 +194,23 @@ func main() {
 				text.NewText(
 					"FullScreen",
 					"전체 화면",
-				).Get(),
+				).String(),
 				text.NewText(
 					"800x600Resolution",
 					"해상도800x600",
-				).Get(),
+				).String(),
 				text.NewText(
 					"1024x768Resolution",
 					"해상도1024x768",
-				).Get(),
+				).String(),
 				text.NewText(
 					"1920x1080Resolution",
 					"해상도1920x1080",
-				).Get(),
+				).String(),
 				text.NewText(
 					"Back",
 					"돌아가기",
-				).Get(),
+				).String(),
 			}
 			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
@@ -277,15 +277,15 @@ func main() {
 				text.NewText(
 					"English",
 					"English",
-				).Get(),
+				).String(),
 				text.NewText(
 					"Korean",
 					"한국어",
-				).Get(),
+				).String(),
 				text.NewText(
 					"Back",
 					"돌아가기",
-				).Get(),
+				).String(),
 			}
 			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
 			buttonActions := make([]bool, len(buttonInfo.Buttons))
@@ -313,7 +313,7 @@ func main() {
 			}
 			break
 		case InGame:
-			game.Logic()
+			game.Logic(currentFont)
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
 			}

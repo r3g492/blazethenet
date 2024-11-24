@@ -1,9 +1,5 @@
 package text
 
-/**
-TODO: 폰트
-*/
-
 const (
 	English = iota
 	Korean
@@ -31,7 +27,7 @@ func NewText(english string, korean string) *Text {
 	}
 }
 
-func (t Text) Get() string {
+func (t Text) String() string {
 	switch language {
 	case English:
 		return t.English
