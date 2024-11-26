@@ -14,6 +14,7 @@ func Logic(font rl.Font) bool {
 			"노드1",
 		),
 	)
+	node.RoutingTable["key"] = "value"
 	linkedNode := NewNode(
 		*text.NewText(
 			"node2",

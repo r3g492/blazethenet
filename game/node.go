@@ -3,14 +3,13 @@ package game
 import (
 	"blazethenet/text"
 	"fmt"
-	"go/types"
 	"strings"
 )
 
 type Node struct {
 	Name         text.Text
 	LinkedNodes  []Node
-	RoutingTable []types.Map
+	RoutingTable map[string]string
 }
 
 func NewNode(name text.Text) *Node {
