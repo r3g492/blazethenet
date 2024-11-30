@@ -14,8 +14,8 @@ const (
 )
 
 var (
-	screenWidth            int32 = 2000
-	screenHeight           int32 = 1200
+	screenWidth            int32 = 1600
+	screenHeight           int32 = 900
 	userMonitorWidth       int
 	userMonitorHeight      int
 	userMonitorCount       int
@@ -29,6 +29,7 @@ var (
 	oneButtonTextureHeight int32
 	buttonImageRectangle   rl.Rectangle
 	gameState              int
+	loadingText            string
 )
 
 const (
@@ -38,19 +39,20 @@ const (
 
 func main() {
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
-	rl.SetTargetFPS(fps)
 
-	gameState = InMainMenu
+	initLoading()
+	setFps()
+	setGameStateAsMain()
 	initButton()
 	defer rl.UnloadTexture(buttonTexture)
 	initFont()
 	defer rl.UnloadFont(currentFont)
 
 	for isGameOn {
-		mousePoint := rl.GetMousePosition()
-		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
+		rl.BeginDrawing()
 
+		mousePoint := rl.GetMousePosition()
 		switch gameState {
 		case InMainMenu:
 			if rl.WindowShouldClose() {
@@ -156,6 +158,16 @@ func main() {
 	rl.CloseWindow()
 }
 
+func setGameStateAsMain() {
+	logLoadingLn("setting game state...")
+	gameState = InMainMenu
+}
+
+func setFps() {
+	logLoadingLn("setting FPS...")
+	rl.SetTargetFPS(fps)
+}
+
 func printMainMenuInfos() {
 	fmt.Println("=== Main Menu Information ===")
 
@@ -192,6 +204,20 @@ func printMainMenuInfos() {
 	fmt.Println("==============================")
 }
 
+func initLoading() {
+	loadingText = ""
+	rl.ClearBackground(rl.Black)
+	logLoadingLn("loading initiated...")
+}
+
+func logLoadingLn(text string) {
+	loadingText += text + "\n"
+	rl.ClearBackground(rl.Black)
+	rl.BeginDrawing()
+	rl.DrawText(loadingText, 50, 80, 24, rl.White)
+	rl.EndDrawing()
+}
+
 func changeResolution(width, height int) {
 	if rl.IsWindowFullscreen() {
 		rl.ToggleFullscreen()
@@ -200,6 +226,7 @@ func changeResolution(width, height int) {
 	screenHeight = int32(height)
 	rl.CloseWindow()
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	initLoading()
 	initButton()
 	initFont()
 }
@@ -216,6 +243,7 @@ func makeItFullScreen() {
 
 	rl.CloseWindow()
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	initLoading()
 	rl.SetWindowPosition(0, 200)
 	rl.ToggleFullscreen()
 	initButton()
@@ -223,12 +251,14 @@ func makeItFullScreen() {
 }
 
 func initFont() {
+	logLoadingLn("setting fonts...")
 	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
 	fontSize = screenWidth / 24
 	currentFont = rl.LoadFontEx(fontPath, min(fontSize, 48), nil, 65535)
 }
 
 func initButton() {
+	logLoadingLn("setting buttons...")
 	loadButtonTexture()
 	buttonWidth = screenWidth / 4
 	buttonHeight = screenHeight / 4
