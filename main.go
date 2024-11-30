@@ -2,6 +2,7 @@ package main
 
 import (
 	"blazethenet/game"
+	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"path/filepath"
 )
@@ -10,17 +11,25 @@ const (
 	gameTitle           string = "Hivemind Invader Game"
 	fps                 int32  = 60
 	ButtonImageFilePath        = "resources/button.png"
-	InOneFile                  = 3
 )
 
-var screenWidth int32 = 1600
-var screenHeight int32 = 900
-var userMonitorWidth int
-var userMonitorHeight int
-var userMonitorCount int
-var isFullScreen bool = false
-var isGameOn bool = true
-var currentFont rl.Font
+var (
+	screenWidth            int32 = 2000
+	screenHeight           int32 = 1200
+	userMonitorWidth       int
+	userMonitorHeight      int
+	userMonitorCount       int
+	isFullScreen           bool = false
+	isGameOn               bool = true
+	currentFont            rl.Font
+	fontSize               int32
+	buttonWidth            int32
+	buttonHeight           int32
+	buttonTexture          rl.Texture2D
+	oneButtonTextureHeight int32
+	buttonImageRectangle   rl.Rectangle
+	gameState              int
+)
 
 const (
 	InMainMenu = iota
@@ -28,28 +37,17 @@ const (
 )
 
 func main() {
-
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
-
 	userMonitorCount = rl.GetMonitorCount()
 	userMonitorWidth = rl.GetMonitorWidth(0)
 	userMonitorHeight = rl.GetMonitorHeight(0)
-
 	rl.SetTargetFPS(fps)
 
-	gameState := InMainMenu
-
-	buttonTexture,
-		oneButtonTextureHeight,
-		buttonImageRectangle := loadButtonTexture()
-	defer unloadButtonTexture(buttonTexture)
-	var buttonWidth int32 = 400
-	var buttonHeight int32 = 200
-
-	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
-	currentFont = rl.LoadFontEx(fontPath, 32, nil, 65535)
+	gameState = InMainMenu
+	initButton()
+	defer rl.UnloadTexture(buttonTexture)
+	initFont()
 	defer rl.UnloadFont(currentFont)
-	var fontSize int32 = 150
 
 	for isGameOn {
 		mousePoint := rl.GetMousePosition()
@@ -107,6 +105,25 @@ func main() {
 				rl.CloseWindow()
 				return
 			}
+			if rl.IsKeyPressed(rl.KeyF3) {
+				printMainMenuInfos()
+			}
+
+			if rl.IsKeyPressed(rl.KeyF4) {
+				changeResolution(1366, 768)
+			}
+
+			if rl.IsKeyPressed(rl.KeyF5) {
+				changeResolution(1600, 900)
+			}
+
+			if rl.IsKeyPressed(rl.KeyF6) {
+				changeResolution(1280, 1024)
+			}
+
+			if rl.IsKeyPressed(rl.KeyF7) {
+				changeResolution(2800, 1400)
+			}
 
 			break
 
@@ -132,6 +149,63 @@ func main() {
 	}
 
 	rl.CloseWindow()
+}
+
+func printMainMenuInfos() {
+	fmt.Println("=== Main Menu Information ===")
+
+	fmt.Println("Game Metadata:")
+	fmt.Printf("  Title: %s\n", gameTitle)
+	fmt.Printf("  FPS: %d\n", fps)
+
+	fmt.Println("\nScreen and Monitor Information:")
+	fmt.Printf("  Screen Resolution: %dx%d\n", screenWidth, screenHeight)
+	fmt.Printf("  Monitor Count: %d\n", userMonitorCount)
+	fmt.Printf("  Primary Monitor Resolution: %dx%d\n", userMonitorWidth, userMonitorHeight)
+
+	fmt.Println("\nGame State and Settings:")
+	fmt.Printf("  Fullscreen: %v\n", isFullScreen)
+	fmt.Printf("  Game Running: %v\n", isGameOn)
+	fmt.Printf("  Current Game State: %s\n", gameState)
+
+	fmt.Println("\nUI Elements Information:")
+
+	fmt.Println("  Font Details:")
+	fmt.Printf("    Font Size: %d\n", fontSize)
+	fmt.Printf("    Font Texture ID: %d\n", currentFont.Texture.ID)
+	fmt.Printf("    Font Base Size: %d\n", currentFont.BaseSize)
+
+	fmt.Println("  Button Details:")
+	fmt.Printf("    Button Width: %d\n", buttonWidth)
+	fmt.Printf("    Button Height: %d\n", buttonHeight)
+	fmt.Printf("    Button Texture ID: %d\n", buttonTexture.ID)
+	fmt.Printf("    Button Texture Dimensions: %dx%d\n", buttonTexture.Width, buttonTexture.Height)
+	fmt.Printf("    One Button Texture Height: %d\n", oneButtonTextureHeight)
+	fmt.Printf("    Button Image Rectangle: {X: %.2f, Y: %.2f, Width: %.2f, Height: %.2f}\n",
+		buttonImageRectangle.X, buttonImageRectangle.Y, buttonImageRectangle.Width, buttonImageRectangle.Height)
+
+	fmt.Println("==============================")
+}
+
+func changeResolution(width, height int) {
+	screenWidth = int32(width)
+	screenHeight = int32(height)
+	rl.CloseWindow()
+	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	initButton()
+	initFont()
+}
+
+func initFont() {
+	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
+	fontSize = screenWidth / 24
+	currentFont = rl.LoadFontEx(fontPath, min(fontSize, 48), nil, 65535)
+}
+
+func initButton() {
+	loadButtonTexture()
+	buttonWidth = screenWidth / 4
+	buttonHeight = screenHeight / 4
 }
 
 func buttonControl(
@@ -184,13 +258,8 @@ func buttonControl(
 	return false
 }
 
-func loadButtonTexture() (rl.Texture2D, int32, rl.Rectangle) {
-	buttonTexture := rl.LoadTexture(ButtonImageFilePath)
-	oneButtonTextureHeight := buttonTexture.Height / 3
-	buttonImageRectangle := rl.Rectangle{Width: float32(buttonTexture.Width), Height: float32(oneButtonTextureHeight)}
-	return buttonTexture, oneButtonTextureHeight, buttonImageRectangle
-}
-
-func unloadButtonTexture(buttonTexture rl.Texture2D) {
-	rl.UnloadTexture(buttonTexture)
+func loadButtonTexture() {
+	buttonTexture = rl.LoadTexture(ButtonImageFilePath)
+	oneButtonTextureHeight = buttonTexture.Height / 3
+	buttonImageRectangle = rl.Rectangle{Width: float32(buttonTexture.Width), Height: float32(oneButtonTextureHeight)}
 }
