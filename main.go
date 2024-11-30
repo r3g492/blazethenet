@@ -43,12 +43,13 @@ func main() {
 		oneButtonTextureHeight,
 		buttonImageRectangle := loadButtonTexture()
 	defer unloadButtonTexture(buttonTexture)
-	var buttonWidth int32 = 300
-	var buttonHeight int32 = 100
+	var buttonWidth int32 = 400
+	var buttonHeight int32 = 200
 
 	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
 	currentFont = rl.LoadFontEx(fontPath, 32, nil, 65535)
 	defer rl.UnloadFont(currentFont)
+	var fontSize int32 = 150
 
 	for isGameOn {
 		mousePoint := rl.GetMousePosition()
@@ -63,7 +64,7 @@ func main() {
 			}
 
 			startButtonX := (screenWidth - buttonWidth) / 2
-			startButtonY := (screenHeight - buttonHeight) / 2
+			startButtonY := int32(100)
 			startButtonRect := rl.Rectangle{
 				X:      float32(startButtonX),
 				Y:      float32(startButtonY),
@@ -78,14 +79,14 @@ func main() {
 				buttonTexture,
 				"Start",
 				currentFont,
-				20,
+				fontSize,
 				rl.White,
 			) {
 				gameState = InGame
 			}
 
 			exitButtonX := (screenWidth - buttonWidth) / 2
-			exitButtonY := (screenHeight-buttonHeight)/2 + (buttonHeight)
+			exitButtonY := startButtonY + buttonHeight
 			exitButtonRect := rl.Rectangle{
 				X:      float32(exitButtonX),
 				Y:      float32(exitButtonY),
@@ -100,7 +101,7 @@ func main() {
 				buttonTexture,
 				"Exit",
 				currentFont,
-				20,
+				fontSize,
 				rl.White,
 			) {
 				rl.CloseWindow()
