@@ -38,9 +38,6 @@ const (
 
 func main() {
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
-	userMonitorCount = rl.GetMonitorCount()
-	userMonitorWidth = rl.GetMonitorWidth(0)
-	userMonitorHeight = rl.GetMonitorHeight(0)
 	rl.SetTargetFPS(fps)
 
 	gameState = InMainMenu
@@ -125,10 +122,18 @@ func main() {
 				changeResolution(2800, 1400)
 			}
 
+			if rl.IsKeyPressed(rl.KeyF8) {
+				makeItFullScreen()
+			}
+
 			break
 
 		case InGame:
-			game.Logic(currentFont)
+			game.Logic(
+				currentFont,
+				screenWidth,
+				screenHeight,
+			)
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
 			}
@@ -188,10 +193,31 @@ func printMainMenuInfos() {
 }
 
 func changeResolution(width, height int) {
+	if rl.IsWindowFullscreen() {
+		rl.ToggleFullscreen()
+	}
 	screenWidth = int32(width)
 	screenHeight = int32(height)
 	rl.CloseWindow()
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	initButton()
+	initFont()
+}
+
+func makeItFullScreen() {
+	if rl.IsWindowFullscreen() {
+		return
+	}
+	display := rl.GetCurrentMonitor()
+	userMonitorWidth = rl.GetMonitorWidth(display)
+	userMonitorHeight = rl.GetMonitorHeight(display)
+	screenWidth = int32(userMonitorWidth)
+	screenHeight = int32(userMonitorHeight)
+
+	rl.CloseWindow()
+	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	rl.SetWindowPosition(0, 200)
+	rl.ToggleFullscreen()
 	initButton()
 	initFont()
 }
