@@ -244,7 +244,7 @@ func makeItFullScreen() {
 	rl.CloseWindow()
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
 	initLoading()
-	rl.SetWindowPosition(0, 200)
+	rl.SetWindowPosition(0, 0)
 	rl.ToggleFullscreen()
 	initButton()
 	initFont()
