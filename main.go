@@ -1,75 +1,30 @@
 package main
 
 import (
-	"blazethenet/button"
 	"blazethenet/game"
-	"blazethenet/text"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"path/filepath"
 )
 
 const (
-	gameTitle string = "Detective Game"
-	fps       int32  = 60
+	gameTitle           string = "Hivemind Invader Game"
+	fps                 int32  = 60
+	ButtonImageFilePath        = "resources/button.png"
+	InOneFile                  = 3
 )
 
-var screenWidth int32 = 1024
-var screenHeight int32 = 800
+var screenWidth int32 = 1600
+var screenHeight int32 = 900
 var userMonitorWidth int
 var userMonitorHeight int
 var userMonitorCount int
 var isFullScreen bool = false
 var isGameOn bool = true
-var screenRatio float32 = 1
-var koreanFont rl.Font
 var currentFont rl.Font
 
 const (
 	InMainMenu = iota
 	InGame
-	InSettings
-	InResolutionSettings
-	InLanguageSettings
-	ScenarioOver
-)
-
-/*
- * Main menu buttons
- */
-const (
-	StartMenu = iota
-	ReturnToMyGame
-	SettingsMenu
-	ExitMenu
-)
-
-/*
- * settings
- */
-const (
-	ResolutionSettings = iota
-	LanguageSettings
-	BackFromSettings
-)
-
-/*
- * Resolution settings
- */
-const (
-	FullScreen = iota
-	Resolution800600
-	Resolution1024768
-	Resolution19201080
-	BackFromResolution
-)
-
-/*
- * Language settings
- */
-const (
-	English = iota
-	Korean
-	BackFromLanguage
 )
 
 func main() {
@@ -82,24 +37,20 @@ func main() {
 
 	rl.SetTargetFPS(fps)
 
-	button.InitButtonTexture()
-	defer button.UnloadButtonTexture()
-
 	gameState := InMainMenu
 
+	buttonTexture,
+		oneButtonTextureHeight,
+		buttonImageRectangle := loadButtonTexture()
+	defer unloadButtonTexture(buttonTexture)
+	var buttonWidth int32 = 300
+	var buttonHeight int32 = 100
+
 	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
-	koreanFont = rl.LoadFontEx(fontPath, 32, nil, 65535)
-	defer rl.UnloadFont(koreanFont)
+	currentFont = rl.LoadFontEx(fontPath, 32, nil, 65535)
+	defer rl.UnloadFont(currentFont)
 
 	for isGameOn {
-		if screenWidth > 1200 {
-			screenRatio = 1.3
-		} else if screenWidth < 600 {
-			screenRatio = 0.8
-		} else {
-			screenRatio = 1
-		}
-
 		mousePoint := rl.GetMousePosition()
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
@@ -110,208 +61,54 @@ func main() {
 				isGameOn = false
 				break
 			}
-			texts := []string{
-				text.NewText(
-					"StartNew",
-					"새로 시작",
-				).String(),
-				text.NewText(
-					"ReturnToGame",
-					"돌아가기",
-				).String(),
-				text.NewText(
-					"InSettings",
-					"설정",
-				).String(),
-				text.NewText(
-					"Exit",
-					"종료",
-				).String(),
+
+			startButtonX := (screenWidth - buttonWidth) / 2
+			startButtonY := (screenHeight - buttonHeight) / 2
+			startButtonRect := rl.Rectangle{
+				X:      float32(startButtonX),
+				Y:      float32(startButtonY),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
 			}
-			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
-			buttonActions := make([]bool, len(buttonInfo.Buttons))
-
-			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
-
-				if buttonActions[StartMenu] {
-					gameState = InGame
-				}
-
-				if buttonActions[ReturnToMyGame] {
-					gameState = InGame
-				}
-
-				if buttonActions[SettingsMenu] {
-					gameState = InSettings
-				}
-
-				if buttonActions[ExitMenu] {
-					isGameOn = false
-				}
+			if buttonControl(
+				mousePoint,
+				startButtonRect,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"Start",
+				currentFont,
+				20,
+				rl.White,
+			) {
+				gameState = InGame
 			}
+
+			exitButtonX := (screenWidth - buttonWidth) / 2
+			exitButtonY := (screenHeight-buttonHeight)/2 + (buttonHeight)
+			exitButtonRect := rl.Rectangle{
+				X:      float32(exitButtonX),
+				Y:      float32(exitButtonY),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
+			}
+			if buttonControl(
+				mousePoint,
+				exitButtonRect,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"Exit",
+				currentFont,
+				20,
+				rl.White,
+			) {
+				rl.CloseWindow()
+				return
+			}
+
 			break
-		case InSettings:
-			texts := []string{
-				text.NewText(
-					"ResolutionSettings",
-					"해상도 세팅",
-				).String(),
-				text.NewText(
-					"LanguageSettings",
-					"언어 설정",
-				).String(),
-				text.NewText(
-					"InMainMenu",
-					"주 메뉴",
-				).String(),
-			}
-			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
-			buttonActions := make([]bool, len(buttonInfo.Buttons))
 
-			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
-
-				if buttonActions[ResolutionSettings] {
-					gameState = InResolutionSettings
-				}
-
-				if buttonActions[LanguageSettings] {
-					gameState = InLanguageSettings
-				}
-
-				if buttonActions[BackFromSettings] {
-					gameState = InMainMenu
-				}
-
-				if rl.IsKeyPressed(rl.KeyEscape) {
-					gameState = InMainMenu
-				}
-			}
-			break
-		case InResolutionSettings:
-			texts := []string{
-				text.NewText(
-					"FullScreen",
-					"전체 화면",
-				).String(),
-				text.NewText(
-					"800x600Resolution",
-					"해상도800x600",
-				).String(),
-				text.NewText(
-					"1024x768Resolution",
-					"해상도1024x768",
-				).String(),
-				text.NewText(
-					"1920x1080Resolution",
-					"해상도1920x1080",
-				).String(),
-				text.NewText(
-					"Back",
-					"돌아가기",
-				).String(),
-			}
-			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
-			buttonActions := make([]bool, len(buttonInfo.Buttons))
-
-			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
-
-				if buttonActions[FullScreen] {
-					if !isFullScreen {
-						screenWidth = int32(userMonitorWidth)
-						screenHeight = int32(userMonitorHeight)
-						rl.SetWindowSize(int(screenWidth), int(screenHeight))
-						rl.SetWindowPosition(0, 0)
-						rl.ToggleFullscreen()
-						isFullScreen = true
-
-					}
-				}
-
-				if buttonActions[Resolution800600] {
-					screenWidth = 800
-					screenHeight = 600
-					rl.SetWindowSize(int(screenWidth), int(screenHeight))
-					rl.SetWindowPosition(0, 30)
-					isFullScreen = false
-					if rl.IsWindowFullscreen() {
-						rl.ToggleFullscreen()
-					}
-				}
-
-				if buttonActions[Resolution1024768] {
-					screenWidth = 1024
-					screenHeight = 768
-					rl.SetWindowSize(int(screenWidth), int(screenHeight))
-					rl.SetWindowPosition(0, 30)
-					isFullScreen = false
-					if rl.IsWindowFullscreen() {
-						rl.ToggleFullscreen()
-					}
-				}
-
-				if buttonActions[Resolution19201080] {
-					screenWidth = 1920
-					screenHeight = 1080
-					rl.SetWindowSize(int(screenWidth), int(screenHeight))
-					rl.SetWindowPosition(0, 30)
-					isFullScreen = false
-					if rl.IsWindowFullscreen() {
-						rl.ToggleFullscreen()
-					}
-				}
-
-				if buttonActions[BackFromResolution] {
-					gameState = InSettings
-				}
-
-				if rl.IsKeyPressed(rl.KeyEscape) {
-					gameState = InMainMenu
-				}
-			}
-			break
-		case InLanguageSettings:
-			texts := []string{
-				text.NewText(
-					"English",
-					"English",
-				).String(),
-				text.NewText(
-					"Korean",
-					"한국어",
-				).String(),
-				text.NewText(
-					"Back",
-					"돌아가기",
-				).String(),
-			}
-			buttonInfo, _ := button.Plan(texts, screenWidth, screenHeight, screenRatio)
-			buttonActions := make([]bool, len(buttonInfo.Buttons))
-
-			for i, btnBounds := range buttonInfo.Buttons {
-				buttonActions[i] = button.DrawButtonAction(btnBounds, mousePoint, texts[i], screenRatio, currentFont)
-
-				if buttonActions[English] {
-					currentFont = rl.Font{}
-					text.SetLanguageToEnglish()
-				}
-
-				if buttonActions[Korean] {
-					currentFont = koreanFont
-					text.SetLanguageToKorean()
-				}
-
-				if buttonActions[BackFromLanguage] {
-					gameState = InSettings
-				}
-
-				if rl.IsKeyPressed(rl.KeyEscape) {
-					gameState = InMainMenu
-				}
-			}
-			break
 		case InGame:
 			game.Logic(currentFont)
 			if rl.IsKeyPressed(rl.KeyF10) {
@@ -325,20 +122,7 @@ func main() {
 			if rl.WindowShouldClose() {
 				gameState = InMainMenu
 			}
-			break
-		case ScenarioOver:
-			rl.DrawText("success", 100, 100, 200, rl.Blue)
-			if rl.IsKeyPressed(rl.KeyF10) {
-				gameState = InMainMenu
-			}
 
-			if rl.IsKeyPressed(rl.KeyEscape) {
-				gameState = InMainMenu
-			}
-
-			if rl.WindowShouldClose() {
-				gameState = InMainMenu
-			}
 			break
 		default:
 		}
@@ -347,4 +131,65 @@ func main() {
 	}
 
 	rl.CloseWindow()
+}
+
+func buttonControl(
+	mousePoint rl.Vector2,
+	buttonRect rl.Rectangle,
+	buttonImageRectangle rl.Rectangle,
+	oneButtonTextureHeight int32,
+	buttonTexture rl.Texture2D,
+	buttonText string,
+	font rl.Font,
+	fontSize int32,
+	textColor rl.Color,
+) bool {
+	isMouseOver := rl.CheckCollisionPointRec(mousePoint, buttonRect)
+	var buttonTextureIndex int32 = 0
+	if isMouseOver {
+		buttonTextureIndex = 1
+	}
+	if isMouseOver && rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		buttonTextureIndex = 2
+	}
+	if isMouseOver && rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		return true
+	}
+	buttonImageRectangle.Y = float32(buttonTextureIndex * oneButtonTextureHeight)
+	rl.DrawTexturePro(
+		buttonTexture,
+		buttonImageRectangle,
+		buttonRect,
+		rl.Vector2{X: 0, Y: 0},
+		0,
+		rl.White,
+	)
+
+	textWidth := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
+	textHeight := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).Y
+	textPosition := rl.Vector2{
+		X: buttonRect.X + (buttonRect.Width-textWidth)/2,
+		Y: buttonRect.Y + (buttonRect.Height-textHeight)/2,
+	}
+
+	rl.DrawTextEx(
+		font,
+		buttonText,
+		textPosition,
+		float32(fontSize),
+		1,
+		textColor,
+	)
+	return false
+}
+
+func loadButtonTexture() (rl.Texture2D, int32, rl.Rectangle) {
+	buttonTexture := rl.LoadTexture(ButtonImageFilePath)
+	oneButtonTextureHeight := buttonTexture.Height / 3
+	buttonImageRectangle := rl.Rectangle{Width: float32(buttonTexture.Width), Height: float32(oneButtonTextureHeight)}
+	return buttonTexture, oneButtonTextureHeight, buttonImageRectangle
+}
+
+func unloadButtonTexture(buttonTexture rl.Texture2D) {
+	rl.UnloadTexture(buttonTexture)
 }
