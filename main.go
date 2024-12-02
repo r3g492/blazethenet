@@ -30,6 +30,7 @@ var (
 	buttonImageRectangle   rl.Rectangle
 	gameState              int
 	loadingText            string
+	backgroundMusic        rl.Music
 )
 
 const (
@@ -45,14 +46,18 @@ func main() {
 	setFps()
 	setGameStateAsMain()
 	initButton()
-	defer rl.UnloadTexture(buttonTexture)
+	defer unloadButton()
 	initFont()
-	defer rl.UnloadFont(currentFont)
+	defer unloadFont()
+	initAudio()
+	defer unloadAudio()
+	initMainMusic()
+	defer unloadMainMusic()
 
 	for isGameOn {
 		rl.ClearBackground(rl.Black)
 		rl.BeginDrawing()
-
+		rl.UpdateMusicStream(backgroundMusic)
 		if rl.WindowShouldClose() && gameState != InGame {
 			isGameOn = false
 			break
@@ -341,11 +346,42 @@ func initFont() {
 	currentFont = rl.LoadFontEx(fontPath, min(fontSize, 48), nil, 65535)
 }
 
+func unloadFont() {
+	logLoadingLn("unsetting font...")
+	rl.UnloadFont(currentFont)
+}
+
 func initButton() {
 	logLoadingLn("setting buttons...")
 	loadButtonTexture()
 	buttonWidth = screenWidth / 5
 	buttonHeight = screenHeight / 5
+}
+
+func unloadButton() {
+	logLoadingLn("unsetting buttons...")
+	rl.UnloadTexture(buttonTexture)
+}
+
+func initAudio() {
+	logLoadingLn("setting audios...")
+	rl.InitAudioDevice()
+}
+
+func unloadAudio() {
+	logLoadingLn("unsetting audio...")
+	rl.CloseAudioDevice()
+}
+
+func initMainMusic() {
+	logLoadingLn("setting main music...")
+	backgroundMusic = rl.LoadMusicStream("resources/audio/background_music.ogg")
+	rl.PlayMusicStream(backgroundMusic)
+}
+
+func unloadMainMusic() {
+	logLoadingLn("unsetting main music...")
+	rl.UnloadMusicStream(backgroundMusic)
 }
 
 func buttonControl(
