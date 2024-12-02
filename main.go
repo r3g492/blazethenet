@@ -226,12 +226,16 @@ func main() {
 			break
 
 		case InGame:
+			if !game.IsGameInit {
+				game.Init()
+			} else {
+				game.Logic(
+					currentFont,
+					screenWidth,
+					screenHeight,
+				)
+			}
 
-			game.Logic(
-				currentFont,
-				screenWidth,
-				screenHeight,
-			)
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
 			}
