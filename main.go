@@ -52,9 +52,13 @@ func main() {
 	for isGameOn {
 		rl.ClearBackground(rl.Black)
 		rl.BeginDrawing()
-		if rl.WindowShouldClose() {
+
+		if rl.WindowShouldClose() && gameState != InGame {
 			isGameOn = false
 			break
+		}
+		if rl.WindowShouldClose() && gameState == InGame {
+			gameState = InMainMenu
 		}
 
 		mousePoint := rl.GetMousePosition()
@@ -218,20 +222,13 @@ func main() {
 			break
 
 		case InGame:
+
 			game.Logic(
 				currentFont,
 				screenWidth,
 				screenHeight,
 			)
 			if rl.IsKeyPressed(rl.KeyF10) {
-				gameState = InMainMenu
-			}
-
-			if rl.IsKeyPressed(rl.KeyEscape) {
-				gameState = InMainMenu
-			}
-
-			if rl.WindowShouldClose() {
 				gameState = InMainMenu
 			}
 
