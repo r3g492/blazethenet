@@ -18,6 +18,10 @@ func Init() {
 		50,
 		70,
 		70,
+		rl.Vector2{
+			X: 0,
+			Y: 0,
+		},
 	}
 	enemy = Enemy{
 		70,
