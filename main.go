@@ -19,7 +19,6 @@ var (
 	userMonitorWidth       int
 	userMonitorHeight      int
 	userMonitorCount       int
-	isFullScreen           bool = false
 	isGameOn               bool = true
 	currentFont            rl.Font
 	fontSize               int32
@@ -270,7 +269,7 @@ func printMainMenuInfos() {
 	fmt.Printf("  Primary Monitor Resolution: %dx%d\n", userMonitorWidth, userMonitorHeight)
 
 	fmt.Println("\nGame State and Settings:")
-	fmt.Printf("  Fullscreen: %v\n", isFullScreen)
+	fmt.Printf("  Fullscreen: %v\n", rl.IsWindowFullscreen())
 	fmt.Printf("  Game Running: %v\n", isGameOn)
 	fmt.Printf("  Current Game State: %s\n", gameState)
 
