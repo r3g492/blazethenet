@@ -37,23 +37,20 @@ func Logic(
 	text := fmt.Sprintf("x: %d y: %d", player.x, player.y)
 	rl.DrawTextEx(font, text, rl.Vector2{X: 150, Y: 150}, 32, 10, rl.White)
 
-	playerDrawX := screenWidth/2 - player.boxLen/2
-	playerDrawY := screenHeight/2 - player.boxLen/2
-	rl.DrawRectangle(
+	playerDrawX := screenWidth/2 - (int32)(player.radius/2)
+	playerDrawY := screenHeight/2 - (int32)(player.radius/2)
+	rl.DrawCircle(
 		playerDrawX,
 		playerDrawY,
-		player.boxLen,
-		player.boxLen,
+		player.radius,
 		rl.White,
 	)
-
 	enemyDrawX := playerDrawX + (enemy.x - player.x)
 	enemyDrawY := playerDrawY + (enemy.y - player.y)
-	rl.DrawRectangle(
+	rl.DrawCircle(
 		enemyDrawX,
 		enemyDrawY,
-		enemy.boxLen,
-		enemy.boxLen,
+		enemy.radius,
 		rl.Red,
 	)
 
@@ -69,6 +66,14 @@ func Logic(
 	if rl.IsKeyDown(rl.KeyS) {
 		player.y += PlayerMovementSpeed
 	}
-
+	mousePoint := rl.GetMousePosition()
+	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		rl.DrawCircle(
+			int32(mousePoint.X),
+			int32(mousePoint.Y),
+			player.radius,
+			rl.Purple,
+		)
+	}
 	return true
 }
