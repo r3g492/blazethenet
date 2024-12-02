@@ -35,6 +35,7 @@ var (
 const (
 	InMainMenu = iota
 	InGame
+	ResolutionSettings
 )
 
 func main() {
@@ -51,15 +52,14 @@ func main() {
 	for isGameOn {
 		rl.ClearBackground(rl.Black)
 		rl.BeginDrawing()
+		if rl.WindowShouldClose() {
+			isGameOn = false
+			break
+		}
 
 		mousePoint := rl.GetMousePosition()
 		switch gameState {
 		case InMainMenu:
-			if rl.WindowShouldClose() {
-				isGameOn = false
-				break
-			}
-
 			startButtonX := (screenWidth - buttonWidth) / 2
 			startButtonY := int32(100)
 			startButtonRect := rl.Rectangle{
@@ -82,8 +82,30 @@ func main() {
 				gameState = InGame
 			}
 
+			resolutionOptionButtonX := (screenWidth - buttonWidth) / 2
+			resolutionOptionButtonY := startButtonY + buttonHeight
+			resolutionOptionButtonRect := rl.Rectangle{
+				X:      float32(resolutionOptionButtonX),
+				Y:      float32(resolutionOptionButtonY),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
+			}
+			if buttonControl(
+				mousePoint,
+				resolutionOptionButtonRect,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"ResolutionSettings",
+				currentFont,
+				fontSize,
+				rl.White,
+			) {
+				gameState = ResolutionSettings
+			}
+
 			exitButtonX := (screenWidth - buttonWidth) / 2
-			exitButtonY := startButtonY + buttonHeight
+			exitButtonY := resolutionOptionButtonY + buttonHeight
 			exitButtonRect := rl.Rectangle{
 				X:      float32(exitButtonX),
 				Y:      float32(exitButtonY),
@@ -104,30 +126,95 @@ func main() {
 				rl.CloseWindow()
 				return
 			}
-			if rl.IsKeyPressed(rl.KeyF3) {
-				printMainMenuInfos()
+			break
+		case ResolutionSettings:
+			ButtonX1 := (screenWidth - buttonWidth) / 2
+			ButtonY1 := int32(100)
+			ButtonRect1 := rl.Rectangle{
+				X:      float32(ButtonX1),
+				Y:      float32(ButtonY1),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
 			}
-
-			if rl.IsKeyPressed(rl.KeyF4) {
-				changeResolution(1366, 768)
-			}
-
-			if rl.IsKeyPressed(rl.KeyF5) {
-				changeResolution(1600, 900)
-			}
-
-			if rl.IsKeyPressed(rl.KeyF6) {
-				changeResolution(1280, 1024)
-			}
-
-			if rl.IsKeyPressed(rl.KeyF7) {
-				changeResolution(2800, 1400)
-			}
-
-			if rl.IsKeyPressed(rl.KeyF8) {
+			if buttonControl(
+				mousePoint,
+				ButtonRect1,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"FullScreen",
+				currentFont,
+				fontSize,
+				rl.White,
+			) {
 				makeItFullScreen()
 			}
 
+			ButtonX2 := (screenWidth - buttonWidth) / 2
+			ButtonY2 := ButtonY1 + buttonHeight
+			ButtonRect2 := rl.Rectangle{
+				X:      float32(ButtonX2),
+				Y:      float32(ButtonY2),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
+			}
+			if buttonControl(
+				mousePoint,
+				ButtonRect2,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"1600x900",
+				currentFont,
+				fontSize,
+				rl.White,
+			) {
+				changeResolution(1600, 900)
+			}
+
+			ButtonX3 := (screenWidth - buttonWidth) / 2
+			ButtonY3 := ButtonY2 + buttonHeight
+			ButtonRect3 := rl.Rectangle{
+				X:      float32(ButtonX3),
+				Y:      float32(ButtonY3),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
+			}
+			if buttonControl(
+				mousePoint,
+				ButtonRect3,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"1280x1024",
+				currentFont,
+				fontSize,
+				rl.White,
+			) {
+				changeResolution(1280, 1024)
+			}
+
+			exitButtonX := (screenWidth - buttonWidth) / 2
+			exitButtonY := ButtonY3 + buttonHeight
+			exitButtonRect := rl.Rectangle{
+				X:      float32(exitButtonX),
+				Y:      float32(exitButtonY),
+				Width:  float32(buttonWidth),
+				Height: float32(buttonHeight),
+			}
+			if buttonControl(
+				mousePoint,
+				exitButtonRect,
+				buttonImageRectangle,
+				oneButtonTextureHeight,
+				buttonTexture,
+				"ToMainMenu",
+				currentFont,
+				fontSize,
+				rl.White,
+			) {
+				gameState = InMainMenu
+			}
 			break
 
 		case InGame:
@@ -253,15 +340,15 @@ func makeItFullScreen() {
 func initFont() {
 	logLoadingLn("setting fonts...")
 	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
-	fontSize = screenWidth / 24
+	fontSize = screenWidth / 48
 	currentFont = rl.LoadFontEx(fontPath, min(fontSize, 48), nil, 65535)
 }
 
 func initButton() {
 	logLoadingLn("setting buttons...")
 	loadButtonTexture()
-	buttonWidth = screenWidth / 4
-	buttonHeight = screenHeight / 4
+	buttonWidth = screenWidth / 5
+	buttonHeight = screenHeight / 5
 }
 
 func buttonControl(
