@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	gameTitle           string = "Hivemind Invader Game"
+	gameTitle           string = "Merge Rogue"
 	fps                 int32  = 60
 	ButtonImageFilePath        = "resources/button.png"
 )
@@ -231,6 +231,7 @@ func main() {
 			} else {
 				game.Logic(
 					currentFont,
+					float32(fontSize),
 					screenWidth,
 					screenHeight,
 				)
