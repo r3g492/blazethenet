@@ -52,6 +52,7 @@ func main() {
 	defer unloadAudio()
 	initMainMusic()
 	defer unloadMainMusic()
+	defer game.Unload()
 
 	for isGameOn {
 		rl.ClearBackground(rl.Black)
@@ -227,9 +228,14 @@ func main() {
 
 		case InGame:
 			if !game.IsGameInit {
-				game.Init()
+				game.Init(
+					currentFont,
+					float32(fontSize),
+					screenWidth,
+					screenHeight,
+				)
 			} else {
-				game.Logic(
+				game.Game(
 					currentFont,
 					float32(fontSize),
 					screenWidth,
@@ -247,7 +253,6 @@ func main() {
 
 		rl.EndDrawing()
 	}
-
 	rl.CloseWindow()
 }
 

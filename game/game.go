@@ -5,16 +5,41 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+const (
+	ButtonImageFilePath = "resources/button.png"
+)
+
 var (
 	IsGameInit = false
 	Turn       = 0
+
+	// button settings
+	buttonWidth            int32
+	buttonHeight           int32
+	buttonTexture          rl.Texture2D
+	oneButtonTextureHeight int32
+	buttonImageRectangle   rl.Rectangle
 )
 
-func Init() {
+func Init(
+	font rl.Font,
+	fontSize float32,
+	screenWidth int32,
+	screenHeight int32,
+) {
 	IsGameInit = true
+	initButton(
+		screenWidth,
+		screenHeight,
+	)
 }
 
-func Logic(
+func Unload() {
+	IsGameInit = false
+	unloadButton()
+}
+
+func Game(
 	font rl.Font,
 	fontSize float32,
 	screenWidth int32,
@@ -28,10 +53,30 @@ func Logic(
 		processPrimaryClick(mousePoint)
 	}
 
-	if rl.IsMouseButtonReleased(rl.MouseRightButton) {
+	endTurnButtonX := screenWidth - buttonWidth
+	endTurnButtonY := screenHeight - buttonHeight
+	endTurnButtonRect := rl.Rectangle{
+		X:      float32(endTurnButtonX),
+		Y:      float32(endTurnButtonY),
+		Width:  float32(buttonWidth),
+		Height: float32(buttonHeight),
+	}
+	if buttonControl(
+		mousePoint,
+		endTurnButtonRect,
+		buttonImageRectangle,
+		oneButtonTextureHeight,
+		buttonTexture,
+		"End Turn",
+		font,
+		int32(fontSize),
+		rl.White,
+	) {
 		processTurn()
 		Turn++
 	}
+
+	MergeControl()
 
 	// do rendering
 	printTurn(
@@ -39,6 +84,8 @@ func Logic(
 		fontSize,
 		float32(screenWidth),
 	)
+
+	MergeRender()
 
 	return true
 }
@@ -71,4 +118,73 @@ func printTurn(
 		0,
 		rl.White,
 	)
+}
+
+func buttonControl(
+	mousePoint rl.Vector2,
+	buttonRect rl.Rectangle,
+	buttonImageRectangle rl.Rectangle,
+	oneButtonTextureHeight int32,
+	buttonTexture rl.Texture2D,
+	buttonText string,
+	font rl.Font,
+	fontSize int32,
+	textColor rl.Color,
+) bool {
+	isMouseOver := rl.CheckCollisionPointRec(mousePoint, buttonRect)
+	var buttonTextureIndex int32 = 0
+	if isMouseOver {
+		buttonTextureIndex = 1
+	}
+	if isMouseOver && rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		buttonTextureIndex = 2
+	}
+	if isMouseOver && rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		return true
+	}
+	buttonImageRectangle.Y = float32(buttonTextureIndex * oneButtonTextureHeight)
+	rl.DrawTexturePro(
+		buttonTexture,
+		buttonImageRectangle,
+		buttonRect,
+		rl.Vector2{X: 0, Y: 0},
+		0,
+		rl.White,
+	)
+
+	textWidth := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
+	textHeight := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).Y
+	textPosition := rl.Vector2{
+		X: buttonRect.X + (buttonRect.Width-textWidth)/2,
+		Y: buttonRect.Y + (buttonRect.Height-textHeight)/2,
+	}
+
+	rl.DrawTextEx(
+		font,
+		buttonText,
+		textPosition,
+		float32(fontSize),
+		1,
+		textColor,
+	)
+	return false
+}
+
+func loadButtonTexture() {
+	buttonTexture = rl.LoadTexture(ButtonImageFilePath)
+	oneButtonTextureHeight = buttonTexture.Height / 3
+	buttonImageRectangle = rl.Rectangle{Width: float32(buttonTexture.Width), Height: float32(oneButtonTextureHeight)}
+}
+
+func initButton(
+	screenWidth int32,
+	screenHeight int32,
+) {
+	loadButtonTexture()
+	buttonWidth = screenWidth / 10
+	buttonHeight = screenHeight / 10
+}
+
+func unloadButton() {
+	rl.UnloadTexture(buttonTexture)
 }
