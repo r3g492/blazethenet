@@ -19,6 +19,8 @@ var (
 	buttonTexture          rl.Texture2D
 	oneButtonTextureHeight int32
 	buttonImageRectangle   rl.Rectangle
+	mergeMap               MergeMap
+	linkMap                LinkMap
 )
 
 func Init(
@@ -26,12 +28,19 @@ func Init(
 	fontSize float32,
 	screenWidth int32,
 	screenHeight int32,
+	mergeWidth int32,
+	mergeHeight int32,
 ) {
 	IsGameInit = true
 	initButton(
 		screenWidth,
 		screenHeight,
 	)
+	mergeMap = CreateMerge(
+		mergeWidth,
+		mergeHeight,
+	)
+	linkMap = CreateLinkMap()
 }
 
 func Unload() {
@@ -76,7 +85,8 @@ func Game(
 		Turn++
 	}
 
-	MergeControl()
+	mergeMap.Render()
+	linkMap.Render()
 
 	// do rendering
 	printTurn(
@@ -84,8 +94,6 @@ func Game(
 		fontSize,
 		float32(screenWidth),
 	)
-
-	MergeRender()
 
 	return true
 }
