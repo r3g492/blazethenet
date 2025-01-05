@@ -50,6 +50,10 @@ func Unload() {
 	unloadButton()
 }
 
+func ReInit() {
+	IsGameInit = false
+}
+
 func Game(
 	font rl.Font,
 	fontSize float32,

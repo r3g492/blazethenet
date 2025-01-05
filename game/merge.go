@@ -18,14 +18,15 @@ func CreateMerge(
 	screenHeight int32,
 ) MergeMap {
 	mergeRectangles := make([]rl.Rectangle, mergeWidth*mergeHeight)
+	var iconLen int32 = 50
 	for i := range mergeWidth * mergeHeight {
-		xPos := float32(i%mergeWidth*50.0) + 300
-		yPos := float32(screenHeight/2 + (i/mergeWidth)*100)
+		xPos := float32(i%mergeWidth*iconLen) + float32(screenWidth/2-mergeWidth*iconLen/2)
+		yPos := float32(screenHeight/2 + (i/mergeWidth)*iconLen)
 		mergeRectangles[i] = rl.Rectangle{
 			xPos,
 			yPos,
-			10.0,
-			10.0,
+			float32(iconLen),
+			float32(iconLen),
 		}
 	}
 

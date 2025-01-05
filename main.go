@@ -233,7 +233,7 @@ func main() {
 					float32(fontSize),
 					screenWidth,
 					screenHeight,
-					16,
+					8,
 					4,
 				)
 			} else {
@@ -326,6 +326,7 @@ func changeResolution(width, height int) {
 	screenHeight = int32(height)
 	rl.CloseWindow()
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
+	game.ReInit()
 	initLoading()
 	initButton()
 	initFont()
@@ -348,6 +349,7 @@ func makeItFullScreen() {
 	rl.ToggleFullscreen()
 	initButton()
 	initFont()
+	game.ReInit()
 }
 
 func initFont() {
