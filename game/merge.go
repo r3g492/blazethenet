@@ -7,9 +7,10 @@ import (
 )
 
 type MergeMap struct {
-	mergeWidth  int32
-	mergeHeight int32
-	mergeList   []int32
+	mergeWidth      int32
+	mergeHeight     int32
+	mergeList       []int32
+	mergeRectangles []rl.Rectangle
 }
 
 func CreateMerge(
@@ -44,5 +45,7 @@ func (m *MergeMap) Render(
 	}
 }
 
-func (m *MergeMap) Control() {
+func (m *MergeMap) Control(
+	mousePoint rl.Vector2,
+) {
 }

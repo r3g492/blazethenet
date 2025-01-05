@@ -56,11 +56,12 @@ func Game(
 ) bool {
 	rl.ClearBackground(rl.Black)
 
-	// do control
 	mousePoint := rl.GetMousePosition()
 	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 		processPrimaryClick(mousePoint)
 	}
+	mergeMap.Control(mousePoint)
+	linkMap.Control(mousePoint)
 
 	endTurnButtonX := screenWidth - buttonWidth
 	endTurnButtonY := screenHeight - buttonHeight

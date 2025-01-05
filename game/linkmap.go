@@ -1,5 +1,7 @@
 package game
 
+import rl "github.com/gen2brain/raylib-go/raylib"
+
 type LinkMap struct {
 	linkedMaps []LinkMap
 }
@@ -11,5 +13,7 @@ func CreateLinkMap() LinkMap {
 func (m *LinkMap) Render() {
 }
 
-func (m *LinkMap) Control() {
+func (m *LinkMap) Control(
+	mousePoint rl.Vector2,
+) {
 }
