@@ -85,7 +85,12 @@ func Game(
 		Turn++
 	}
 
-	mergeMap.Render()
+	mergeMap.Render(
+		font,
+		fontSize,
+		screenWidth,
+		screenHeight,
+	)
 	linkMap.Render()
 
 	// do rendering
