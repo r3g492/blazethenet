@@ -9,7 +9,6 @@ import (
 type MergeMap struct {
 	mergeWidth      int32
 	mergeHeight     int32
-	mergeList       []int32
 	mergeRectangles []rl.Rectangle
 }
 
@@ -17,10 +16,20 @@ func CreateMerge(
 	mergeWidth int32,
 	mergeHeight int32,
 ) MergeMap {
+	mergeRectangles := make([]rl.Rectangle, mergeWidth*mergeHeight)
+	for i := range mergeWidth * mergeHeight {
+		mergeRectangles[i] = rl.Rectangle{
+			0,
+			0,
+			10.0,
+			10.0,
+		}
+	}
+
 	return MergeMap{
-		mergeWidth:  mergeWidth,
-		mergeHeight: mergeHeight,
-		mergeList:   make([]int32, mergeWidth*mergeHeight),
+		mergeWidth:      mergeWidth,
+		mergeHeight:     mergeHeight,
+		mergeRectangles: mergeRectangles,
 	}
 }
 
@@ -34,7 +43,7 @@ func (m *MergeMap) Render(
 	screenWidth int32,
 	screenHeight int32,
 ) {
-	for i := range m.mergeList {
+	for i := range m.mergeRectangles {
 		rl.DrawTextEx(font,
 			strconv.Itoa(i),
 			rl.Vector2{X: float32(int32(i)%m.mergeWidth*50.0) + 300, Y: float32(screenHeight/2 + (int32(i)/m.mergeWidth)*100)},
