@@ -3,7 +3,6 @@ package game
 import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"strconv"
 )
 
 type MergeMap struct {
@@ -15,12 +14,16 @@ type MergeMap struct {
 func CreateMerge(
 	mergeWidth int32,
 	mergeHeight int32,
+	screenWidth int32,
+	screenHeight int32,
 ) MergeMap {
 	mergeRectangles := make([]rl.Rectangle, mergeWidth*mergeHeight)
 	for i := range mergeWidth * mergeHeight {
+		xPos := float32(i%mergeWidth*50.0) + 300
+		yPos := float32(screenHeight/2 + (i/mergeWidth)*100)
 		mergeRectangles[i] = rl.Rectangle{
-			0,
-			0,
+			xPos,
+			yPos,
 			10.0,
 			10.0,
 		}
@@ -44,11 +47,11 @@ func (m *MergeMap) Render(
 	screenHeight int32,
 ) {
 	for i := range m.mergeRectangles {
-		rl.DrawTextEx(font,
-			strconv.Itoa(i),
-			rl.Vector2{X: float32(int32(i)%m.mergeWidth*50.0) + 300, Y: float32(screenHeight/2 + (int32(i)/m.mergeWidth)*100)},
-			fontSize,
-			0,
+		rl.DrawRectangle(
+			int32(m.mergeRectangles[i].X),
+			int32(m.mergeRectangles[i].Y),
+			int32(m.mergeRectangles[i].Width),
+			int32(m.mergeRectangles[i].Height),
 			rl.White,
 		)
 	}

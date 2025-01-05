@@ -39,6 +39,8 @@ func Init(
 	mergeMap = CreateMerge(
 		mergeWidth,
 		mergeHeight,
+		screenWidth,
+		screenHeight,
 	)
 	linkMap = CreateLinkMap()
 }
