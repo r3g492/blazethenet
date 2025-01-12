@@ -94,6 +94,7 @@ func Game(
 		fontSize,
 		screenWidth,
 		screenHeight,
+		mousePoint,
 	)
 	mergeMap.Control(
 		mousePoint,
