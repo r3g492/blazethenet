@@ -63,9 +63,6 @@ func Game(
 	rl.ClearBackground(rl.Black)
 
 	mousePoint := rl.GetMousePosition()
-	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-		processPrimaryClick(mousePoint)
-	}
 	mergeMap.Control(mousePoint)
 	linkMap.Control(mousePoint)
 
@@ -98,6 +95,9 @@ func Game(
 		screenWidth,
 		screenHeight,
 	)
+	mergeMap.Control(
+		mousePoint,
+	)
 	linkMap.Render()
 
 	// do rendering
@@ -108,15 +108,6 @@ func Game(
 	)
 
 	return true
-}
-
-func processPrimaryClick(mousePoint rl.Vector2) {
-	rl.DrawCircle(
-		int32(mousePoint.X),
-		int32(mousePoint.Y),
-		50,
-		rl.Purple,
-	)
 }
 
 func processTurn() {

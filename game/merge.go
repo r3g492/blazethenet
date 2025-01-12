@@ -24,10 +24,10 @@ func CreateMerge(
 		xPos := float32(i%mergeWidth*iconLen) + float32(screenWidth/2-mergeWidth*iconLen/2)
 		yPos := float32(screenHeight/2 + (i/mergeWidth)*iconLen)
 		mergeRectangles[i] = rl.Rectangle{
-			xPos,
-			yPos,
-			float32(iconLen),
-			float32(iconLen),
+			X:      xPos,
+			Y:      yPos,
+			Width:  float32(iconLen),
+			Height: float32(iconLen),
 		}
 	}
 
@@ -61,7 +61,10 @@ func (m *MergeMap) Render(
 		rl.DrawTextEx(
 			font,
 			strconv.Itoa(i),
-			rl.Vector2{m.mergeRectangles[i].X, m.mergeRectangles[i].Y},
+			rl.Vector2{
+				X: m.mergeRectangles[i].X,
+				Y: m.mergeRectangles[i].Y,
+			},
 			fontSize,
 			0.1,
 			rl.Red,
@@ -72,4 +75,18 @@ func (m *MergeMap) Render(
 func (m *MergeMap) Control(
 	mousePoint rl.Vector2,
 ) {
+	if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+		for i, rect := range m.mergeRectangles {
+			if rl.CheckCollisionPointRec(mousePoint, rect) {
+				rl.DrawText(
+					strconv.Itoa(i),
+					int32(mousePoint.X),
+					int32(mousePoint.Y),
+					200,
+					rl.Blue,
+				)
+				break
+			}
+		}
+	}
 }
