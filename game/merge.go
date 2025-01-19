@@ -13,6 +13,7 @@ type MergeMap struct {
 	mergeContents   []string
 	isDragging      bool
 	dragContent     string
+	dragIdx         int
 }
 
 func CreateMerge(
@@ -43,7 +44,14 @@ func CreateMerge(
 		mergeContents:   mergeContents,
 		isDragging:      false,
 		dragContent:     "",
+		dragIdx:         -1,
 	}
+}
+
+func (m *MergeMap) AddFire(
+	rectangleIdx int,
+) {
+	m.mergeContents[rectangleIdx] = "fire 1"
 }
 
 func (m *MergeMap) String() string {
@@ -58,12 +66,20 @@ func (m *MergeMap) Render(
 	mousePoint rl.Vector2,
 ) {
 	for i := range m.mergeRectangles {
+		var color rl.Color
+		if m.mergeContents[i] == "fire 1" {
+			color = rl.Red
+		} else if m.mergeContents[i] == "fire 2" {
+			color = rl.Blue
+		} else {
+			color = rl.White
+		}
 		rl.DrawRectangle(
 			int32(m.mergeRectangles[i].X),
 			int32(m.mergeRectangles[i].Y),
 			int32(m.mergeRectangles[i].Width),
 			int32(m.mergeRectangles[i].Height),
-			rl.White,
+			color,
 		)
 	}
 	for i := range m.mergeRectangles {
@@ -99,12 +115,29 @@ func (m *MergeMap) Control(
 			if rl.CheckCollisionPointRec(mousePoint, rect) {
 				m.isDragging = true
 				m.dragContent = m.mergeContents[i]
-				break
+				m.dragIdx = i
+				return
 			}
 		}
 	}
 	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		for i, rect := range m.mergeRectangles {
+			if rl.CheckCollisionPointRec(mousePoint, rect) {
+				if m.dragContent == "fire 1" && m.dragContent == m.mergeContents[i] {
+					m.isDragging = false
+					m.dragContent = ""
+					m.mergeContents[m.dragIdx] = ""
+					m.dragIdx = -1
+					m.mergeContents[i] = "fire 2"
+				}
+				m.isDragging = false
+				m.dragContent = ""
+				m.dragIdx = -1
+				return
+			}
+		}
 		m.isDragging = false
 		m.dragContent = ""
+		m.dragIdx = -1
 	}
 }

@@ -42,6 +42,9 @@ func Init(
 		screenWidth,
 		screenHeight,
 	)
+	// TODO: delete this test codes
+	mergeMap.AddFire(1)
+	mergeMap.AddFire(25)
 	linkMap = CreateLinkMap()
 }
 
