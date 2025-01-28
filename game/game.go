@@ -44,6 +44,8 @@ func Init(
 	)
 	// TODO: delete this test codes
 	mergeMap.AddFire(1)
+	mergeMap.AddFire(2)
+	mergeMap.AddFire(3)
 	mergeMap.AddFire(25)
 	linkMap = CreateLinkMap()
 }
@@ -116,6 +118,9 @@ func Game(
 
 func processTurn() {
 	// TODO: do turn logics
+	// refill merge
+	mergeMap.AddFire(1)
+	mergeMap.AddFire(2)
 }
 
 func printTurn(

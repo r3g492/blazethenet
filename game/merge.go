@@ -16,6 +16,20 @@ type MergeMap struct {
 	dragIdx         int
 }
 
+const (
+	Fire1 = "fire 1"
+	Fire2 = "fire 2"
+	Fire3 = "fire 3"
+	Fire4 = "fire 4"
+)
+
+var FireMap = map[int]string{
+	1: Fire1,
+	2: Fire2,
+	3: Fire3,
+	4: Fire4,
+}
+
 func CreateMerge(
 	mergeWidth int32,
 	mergeHeight int32,
@@ -51,7 +65,7 @@ func CreateMerge(
 func (m *MergeMap) AddFire(
 	rectangleIdx int,
 ) {
-	m.mergeContents[rectangleIdx] = "fire 1"
+	m.mergeContents[rectangleIdx] = FireMap[1]
 }
 
 func (m *MergeMap) String() string {
@@ -69,10 +83,14 @@ func (m *MergeMap) Render(
 		var color rl.Color
 		if m.dragIdx == i {
 			color = rl.White
-		} else if m.mergeContents[i] == "fire 1" {
+		} else if m.mergeContents[i] == FireMap[1] {
 			color = rl.Red
-		} else if m.mergeContents[i] == "fire 2" {
+		} else if m.mergeContents[i] == FireMap[2] {
 			color = rl.Blue
+		} else if m.mergeContents[i] == FireMap[3] {
+			color = rl.Purple
+		} else if m.mergeContents[i] == FireMap[4] {
+			color = rl.Yellow
 		} else {
 			color = rl.White
 		}
@@ -125,12 +143,22 @@ func (m *MergeMap) Control(
 	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 		for i, rect := range m.mergeRectangles {
 			if rl.CheckCollisionPointRec(mousePoint, rect) {
-				if m.dragContent == "fire 1" && m.dragContent == m.mergeContents[i] {
+				if !m.isDragging {
+					return
+				}
+				if m.dragContent == m.mergeContents[i] {
 					m.isDragging = false
 					m.dragContent = ""
 					m.mergeContents[m.dragIdx] = ""
 					m.dragIdx = -1
-					m.mergeContents[i] = "fire 2"
+					var updated = deriveMerged(m.mergeContents[i])
+					if updated != "" {
+						m.mergeContents[i] = updated
+					}
+				}
+				if m.dragContent != "" && notInDictionary(m.mergeContents[i]) {
+					m.mergeContents[i] = m.dragContent
+					m.mergeContents[m.dragIdx] = ""
 				}
 				m.isDragging = false
 				m.dragContent = ""
@@ -142,4 +170,28 @@ func (m *MergeMap) Control(
 		m.dragContent = ""
 		m.dragIdx = -1
 	}
+}
+
+func notInDictionary(
+	content string,
+) bool {
+	if content == FireMap[1] || content == FireMap[2] || content == FireMap[3] || content == FireMap[4] {
+		return false
+	}
+	return true
+}
+
+func deriveMerged(
+	content string,
+) string {
+	if content == FireMap[1] {
+		return FireMap[2]
+	}
+	if content == FireMap[2] {
+		return FireMap[3]
+	}
+	if content == FireMap[3] {
+		return FireMap[4]
+	}
+	return ""
 }

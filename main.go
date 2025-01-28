@@ -233,8 +233,8 @@ func main() {
 					float32(fontSize),
 					screenWidth,
 					screenHeight,
+					16,
 					8,
-					4,
 				)
 			} else {
 				game.Game(
