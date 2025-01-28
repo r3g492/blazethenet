@@ -60,7 +60,7 @@ func main() {
 		rl.UpdateMusicStream(backgroundMusic)
 		if rl.WindowShouldClose() && gameState != InGame {
 			isGameOn = false
-			break
+			return
 		}
 		if rl.WindowShouldClose() && gameState == InGame {
 			gameState = InMainMenu
@@ -132,7 +132,7 @@ func main() {
 				fontSize,
 				rl.White,
 			) {
-				rl.CloseWindow()
+				fmt.Println("Exiting the game...")
 				return
 			}
 			break
