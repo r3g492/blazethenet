@@ -67,7 +67,9 @@ func (m *MergeMap) Render(
 ) {
 	for i := range m.mergeRectangles {
 		var color rl.Color
-		if m.mergeContents[i] == "fire 1" {
+		if m.dragIdx == i {
+			color = rl.White
+		} else if m.mergeContents[i] == "fire 1" {
 			color = rl.Red
 		} else if m.mergeContents[i] == "fire 2" {
 			color = rl.Blue
