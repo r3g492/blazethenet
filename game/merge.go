@@ -65,7 +65,10 @@ func CreateMerge(
 func (m *MergeMap) AddFire(
 	rectangleIdx int,
 ) {
-	m.mergeContents[rectangleIdx] = FireMap[1]
+	var result = deriveMerged(FireMap[1])
+	if result != "" {
+		m.mergeContents[rectangleIdx] = result
+	}
 }
 
 func (m *MergeMap) String() string {
