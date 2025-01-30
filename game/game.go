@@ -43,10 +43,7 @@ func Init(
 		screenHeight,
 	)
 	// TODO: delete this test codes
-	mergeMap.AddFire(1)
-	mergeMap.AddFire(2)
-	mergeMap.AddFire(3)
-	mergeMap.AddFire(25)
+	mergeMap.AddFireGen(0)
 	linkMap = CreateLinkMap()
 }
 
@@ -119,8 +116,7 @@ func Game(
 func processTurn() {
 	// TODO: do turn logics
 	// refill merge
-	mergeMap.AddFire(1)
-	mergeMap.AddFire(2)
+	mergeMap.ProcessTurn()
 }
 
 func printTurn(

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"strconv"
+	"strings"
 )
 
 type MergeMap struct {
@@ -17,10 +18,14 @@ type MergeMap struct {
 }
 
 const (
-	Fire1 = "fire 1"
-	Fire2 = "fire 2"
-	Fire3 = "fire 3"
-	Fire4 = "fire 4"
+	Fire1    = "fire 1"
+	Fire2    = "fire 2"
+	Fire3    = "fire 3"
+	Fire4    = "fire 4"
+	FireGen1 = "fire generator 1"
+	FireGen2 = "fire generator 2"
+	FireGen3 = "fire generator 3"
+	FireGen4 = "fire generator 4"
 )
 
 var FireMap = map[int]string{
@@ -28,6 +33,13 @@ var FireMap = map[int]string{
 	2: Fire2,
 	3: Fire3,
 	4: Fire4,
+}
+
+var FireGeneratorMap = map[int]string{
+	1: FireGen1,
+	2: FireGen2,
+	3: FireGen3,
+	4: FireGen4,
 }
 
 func CreateMerge(
@@ -48,7 +60,7 @@ func CreateMerge(
 			Width:  float32(iconLen),
 			Height: float32(iconLen),
 		}
-		mergeContents[i] = strconv.Itoa(int(i))
+		mergeContents[i] = ""
 	}
 
 	return MergeMap{
@@ -65,10 +77,19 @@ func CreateMerge(
 func (m *MergeMap) AddFire(
 	rectangleIdx int,
 ) {
-	var result = deriveMerged(FireMap[1])
+	var result = deriveMerged(
+		FireMap[1],
+		m.mergeContents[rectangleIdx],
+	)
 	if result != "" {
 		m.mergeContents[rectangleIdx] = result
 	}
+}
+
+func (m *MergeMap) AddFireGen(
+	rectangleIdx int,
+) {
+	m.mergeContents[rectangleIdx] = FireGeneratorMap[1]
 }
 
 func (m *MergeMap) String() string {
@@ -94,6 +115,8 @@ func (m *MergeMap) Render(
 			color = rl.Purple
 		} else if m.mergeContents[i] == FireMap[4] {
 			color = rl.Yellow
+		} else if m.mergeContents[i] == FireGeneratorMap[1] {
+			color = rl.Black
 		} else {
 			color = rl.White
 		}
@@ -146,32 +169,48 @@ func (m *MergeMap) Control(
 	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 		for i, rect := range m.mergeRectangles {
 			if rl.CheckCollisionPointRec(mousePoint, rect) {
-				if !m.isDragging {
+				if !m.isDragging || m.dragIdx == i {
 					return
 				}
 				if m.dragContent == m.mergeContents[i] {
-					m.isDragging = false
-					m.dragContent = ""
-					m.mergeContents[m.dragIdx] = ""
-					m.dragIdx = -1
-					var updated = deriveMerged(m.mergeContents[i])
+					var updated = deriveMerged(
+						m.dragContent,
+						m.mergeContents[i],
+					)
 					if updated != "" {
 						m.mergeContents[i] = updated
+						m.isDragging = false
+						m.dragContent = ""
+						m.mergeContents[m.dragIdx] = ""
+						m.dragIdx = -1
+						return
 					}
 				}
-				if m.dragContent != "" && notInDictionary(m.mergeContents[i]) {
+				if m.dragContent != "" && notInDictionary(m.mergeContents[i]) && i != m.dragIdx {
+					fmt.Println("deletion happened")
 					m.mergeContents[i] = m.dragContent
 					m.mergeContents[m.dragIdx] = ""
+					m.isDragging = false
+					m.dragContent = ""
+					m.dragIdx = -1
+					return
 				}
-				m.isDragging = false
-				m.dragContent = ""
-				m.dragIdx = -1
 				return
 			}
 		}
 		m.isDragging = false
 		m.dragContent = ""
 		m.dragIdx = -1
+	}
+}
+
+func (m *MergeMap) ProcessTurn() {
+	for contentIdx := range m.mergeContents {
+		for fireGenIdx := range FireGeneratorMap {
+			if m.mergeContents[contentIdx] == FireGeneratorMap[fireGenIdx] {
+				m.AddFire(contentIdx + 1)
+			}
+		}
 	}
 }
 
@@ -186,15 +225,16 @@ func notInDictionary(
 
 func deriveMerged(
 	content string,
+	targetContent string,
 ) string {
-	if content == FireMap[1] {
-		return FireMap[2]
+	if targetContent == "" {
+		return content
 	}
-	if content == FireMap[2] {
-		return FireMap[3]
-	}
-	if content == FireMap[3] {
-		return FireMap[4]
+	for fireKey := range FireMap {
+		if strings.Contains(content, FireMap[fireKey]) && content == targetContent {
+			fmt.Println("Merge happened")
+			return FireMap[fireKey+1]
+		}
 	}
 	return ""
 }
