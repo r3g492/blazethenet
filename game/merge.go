@@ -156,21 +156,16 @@ func (m *MergeMap) Render(
 func (m *MergeMap) Control(
 	mousePoint rl.Vector2,
 ) {
-	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
-		for i, rect := range m.mergeRectangles {
-			if rl.CheckCollisionPointRec(mousePoint, rect) {
-				m.isDragging = true
-				m.dragContent = m.mergeContents[i]
-				m.dragIdx = i
-				return
-			}
-		}
+	if rl.IsMouseButtonPressed(rl.MouseRightButton) {
+		m.isDragging = false
+		m.dragContent = ""
+		m.dragIdx = -1
 	}
-	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+	if m.isDragging && rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 		for i, rect := range m.mergeRectangles {
 			if rl.CheckCollisionPointRec(mousePoint, rect) {
 				if !m.isDragging || m.dragIdx == i {
-					return
+					break
 				}
 				if m.dragContent == m.mergeContents[i] {
 					var updated = deriveMerged(
@@ -183,19 +178,63 @@ func (m *MergeMap) Control(
 						m.dragContent = ""
 						m.mergeContents[m.dragIdx] = ""
 						m.dragIdx = -1
-						return
+						break
 					}
 				}
 				if m.dragContent != "" && notInDictionary(m.mergeContents[i]) && i != m.dragIdx {
-					fmt.Println("deletion happened")
 					m.mergeContents[i] = m.dragContent
 					m.mergeContents[m.dragIdx] = ""
 					m.isDragging = false
 					m.dragContent = ""
 					m.dragIdx = -1
-					return
+					break
 				}
-				return
+				break
+			}
+		}
+		m.isDragging = false
+		m.dragContent = ""
+		m.dragIdx = -1
+	}
+	if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+		for i, rect := range m.mergeRectangles {
+			if rl.CheckCollisionPointRec(mousePoint, rect) && m.isDragging == false {
+				m.isDragging = true
+				m.dragContent = m.mergeContents[i]
+				m.dragIdx = i
+				break
+			}
+		}
+	}
+	if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+		for i, rect := range m.mergeRectangles {
+			if rl.CheckCollisionPointRec(mousePoint, rect) {
+				if !m.isDragging || m.dragIdx == i {
+					break
+				}
+				if m.dragContent == m.mergeContents[i] {
+					var updated = deriveMerged(
+						m.dragContent,
+						m.mergeContents[i],
+					)
+					if updated != "" {
+						m.mergeContents[i] = updated
+						m.isDragging = false
+						m.dragContent = ""
+						m.mergeContents[m.dragIdx] = ""
+						m.dragIdx = -1
+						break
+					}
+				}
+				if m.dragContent != "" && notInDictionary(m.mergeContents[i]) && i != m.dragIdx {
+					m.mergeContents[i] = m.dragContent
+					m.mergeContents[m.dragIdx] = ""
+					m.isDragging = false
+					m.dragContent = ""
+					m.dragIdx = -1
+					break
+				}
+				break
 			}
 		}
 		m.isDragging = false
