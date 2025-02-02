@@ -4,11 +4,10 @@ import (
 	"blazethenet/game"
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"path/filepath"
 )
 
 const (
-	gameTitle           string = "Merge Rogue"
+	gameTitle           string = "Hello Game"
 	fps                 int32  = 60
 	ButtonImageFilePath        = "resources/button.png"
 )
@@ -19,8 +18,8 @@ var (
 	userMonitorWidth       int
 	userMonitorHeight      int
 	userMonitorCount       int
-	isGameOn               bool = true
-	currentFont            rl.Font
+	isGameOn               bool    = true
+	currentFont            rl.Font = rl.GetFontDefault()
 	fontSize               int32
 	buttonWidth            int32
 	buttonHeight           int32
@@ -105,7 +104,7 @@ func main() {
 				buttonImageRectangle,
 				oneButtonTextureHeight,
 				buttonTexture,
-				"ResolutionSettings",
+				"Resolution",
 				currentFont,
 				fontSize,
 				rl.White,
@@ -354,9 +353,7 @@ func makeItFullScreen() {
 
 func initFont() {
 	logLoadingLn("setting fonts...")
-	fontPath := filepath.Join("resources", "font", "Noto_Sans_KR", "static", "NotoSansKR-ExtraBold.ttf")
 	fontSize = screenWidth / 48
-	currentFont = rl.LoadFontEx(fontPath, min(fontSize, 48), nil, 65535)
 }
 
 func unloadFont() {
@@ -429,11 +426,11 @@ func buttonControl(
 		rl.White,
 	)
 
-	textWidth := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
+	// _ := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
 	textHeight := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).Y
 	textPosition := rl.Vector2{
-		X: buttonRect.X + (buttonRect.Width-textWidth)/2,
-		Y: buttonRect.Y + (buttonRect.Height-textHeight)/2,
+		X: buttonRect.X + 80,
+		Y: buttonRect.Y + (buttonRect.Height-textHeight)/3,
 	}
 
 	rl.DrawTextEx(

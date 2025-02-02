@@ -168,10 +168,10 @@ func buttonControl(
 		rl.White,
 	)
 
-	textWidth := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
+	// textWidth := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
 	textHeight := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).Y
 	textPosition := rl.Vector2{
-		X: buttonRect.X + (buttonRect.Width-textWidth)/2,
+		X: buttonRect.X + 80,
 		Y: buttonRect.Y + (buttonRect.Height-textHeight)/2,
 	}
 
