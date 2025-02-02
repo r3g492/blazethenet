@@ -1,7 +1,6 @@
 package main
 
 import (
-	"blazethenet/game"
 	"fmt"
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -51,7 +50,6 @@ func main() {
 	defer unloadAudio()
 	initMainMusic()
 	defer unloadMainMusic()
-	defer game.Unload()
 
 	for isGameOn {
 		rl.ClearBackground(rl.Black)
@@ -226,23 +224,6 @@ func main() {
 			break
 
 		case InGame:
-			if !game.IsGameInit {
-				game.Init(
-					currentFont,
-					float32(fontSize),
-					screenWidth,
-					screenHeight,
-					16,
-					8,
-				)
-			} else {
-				game.Game(
-					currentFont,
-					float32(fontSize),
-					screenWidth,
-					screenHeight,
-				)
-			}
 
 			if rl.IsKeyPressed(rl.KeyF10) {
 				gameState = InMainMenu
@@ -325,7 +306,6 @@ func changeResolution(width, height int) {
 	screenHeight = int32(height)
 	rl.CloseWindow()
 	rl.InitWindow(screenWidth, screenHeight, gameTitle)
-	game.ReInit()
 	initLoading()
 	initButton()
 	initFont()
@@ -348,7 +328,6 @@ func makeItFullScreen() {
 	rl.ToggleFullscreen()
 	initButton()
 	initFont()
-	game.ReInit()
 }
 
 func initFont() {
@@ -429,7 +408,7 @@ func buttonControl(
 	// _ := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).X
 	textHeight := rl.MeasureTextEx(font, buttonText, float32(fontSize), 1).Y
 	textPosition := rl.Vector2{
-		X: buttonRect.X + 80,
+		X: buttonRect.X + 60,
 		Y: buttonRect.Y + (buttonRect.Height-textHeight)/3,
 	}
 
