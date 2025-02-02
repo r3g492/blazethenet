@@ -1,5 +1,7 @@
 # blazethenet
 
+this project uses raylib (https://www.raylib.com/license.html)
+
 on arch
 
 export XDG_SESSION_TYPE=x11
